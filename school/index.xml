@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Kata Frenata</title>
-    <link>http://frenata.me/index.xml</link>
-    <description>Recent content on Kata Frenata</description>
+    <title>School on Kata Frenata</title>
+    <link>http://frenata.me/school/index.xml</link>
+    <description>Recent content in School on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 18 Dec 2016 22:42:47 +0700</lastBuildDate>
-    <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://frenata.me/school/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>a day with elixir</title>
@@ -40,25 +40,6 @@
 &lt;p&gt;Of course I don&amp;rsquo;t plan on stopping there. The winter school break presents me with a rare opportunity&amp;ndash;the chance to schedule certification tests during the work week without having to worry about who will take care of the baby. To that end, my goal is to further finish the Security+ and Project+ certifications before 9 January. With focus, it should just be possible.&lt;/p&gt;
 
 &lt;p&gt;I started at WGU in March of 2016, all the GenEd credits out of the way and about 95 credits to do in order to finish a bachelor&amp;rsquo;s degree long delayed. 44 remain, and by early January only 33 will remain. My longterm aim is now to finish the entirety of the degree plan by the end of May, marking 15 months and 2 terms of study.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Mail</title>
-      <link>http://frenata.me/mail/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://frenata.me/mail/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Site</title>
-      <link>http://frenata.me/site/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://frenata.me/site/</guid>
-      <description>&lt;p&gt;The site is built with &lt;a target=&#34;_blank&#34; href=&#34;//gohugo.io&#34;&gt;Hugo&lt;/a&gt;—a static site generator made with Go. It uses the &lt;a target=&#34;_blank&#34; href=&#34;//github.com/IvanChou/hugo-theme-vec&#34;&gt;vec&lt;/a&gt; theme. The posts are written in Markdown.&lt;/p&gt;
 </description>
     </item>
     

@@ -6,8 +6,20 @@
     <description>Recent content in School on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Dec 2016 22:42:47 +0700</lastBuildDate>
+    <lastBuildDate>Tue, 20 Dec 2016 11:10:31 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/school/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>the rabbit</title>
+      <link>http://frenata.me/school/the-rabbit/</link>
+      <pubDate>Tue, 20 Dec 2016 11:10:31 +0700</pubDate>
+      
+      <guid>http://frenata.me/school/the-rabbit/</guid>
+      <description>&lt;p&gt;The goal is to sit and pass CompTIA&amp;rsquo;s Security+ by the end of the week. Scheduling shouldn&amp;rsquo;t be a problem, but I&amp;rsquo;m only halfway through the material an Tuesday morning. I&amp;rsquo;ll need to prove I&amp;rsquo;m ready by the end of Wednesday.&lt;/p&gt;
+
+&lt;p&gt;Away!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>a day with elixir</title>

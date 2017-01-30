@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://frenata.me/school/Hustle/</loc>
+    <lastmod>2017-01-23T12:08:06+07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://frenata.me/school/the-rabbit/</loc>
     <lastmod>2016-12-20T11:10:31+07:00</lastmod>
   </url>
@@ -18,7 +23,7 @@
   
   <url>
     <loc>http://frenata.me/</loc>
-    <lastmod>2016-12-20T11:10:31+07:00</lastmod>
+    <lastmod>2017-01-23T12:08:06+07:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -28,7 +33,7 @@
   
   <url>
     <loc>http://frenata.me/school/</loc>
-    <lastmod>2016-12-20T11:10:31+07:00</lastmod>
+    <lastmod>2017-01-23T12:08:06+07:00</lastmod>
     <priority>0</priority>
   </url>
   

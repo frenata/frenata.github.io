@@ -6,8 +6,24 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 23 Jan 2017 12:08:06 +0700</lastBuildDate>
+    <lastBuildDate>Sat, 04 Feb 2017 15:41:19 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>elastic</title>
+      <link>http://frenata.me/school/elastic/</link>
+      <pubDate>Sat, 04 Feb 2017 15:41:19 +0700</pubDate>
+      
+      <guid>http://frenata.me/school/elastic/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;m diving into learning the Elastic stack: Logstash, Elasticsearch, Kibana. My aim is to use it to enable the local school here to extract useful information from the reams of lesson plan .docs they have laying around. Useless data right now.&lt;/p&gt;
+
+&lt;p&gt;There&amp;rsquo;s &lt;em&gt;a bunch&lt;/em&gt; going on, and the actual process I&amp;rsquo;ll need to follow to ETL the data I do have into a usuable state isn&amp;rsquo;t entirely clear to me yet. I know I can just throw it into elastic and get full text search, but the data is semi-structured already, so I&amp;rsquo;d like to be able to extract ESLRs, times, teacher names into fields outright.&lt;/p&gt;
+
+&lt;p&gt;Too much theory on a bunch of interlocking systems is confusing, so my next task is to follow the &lt;a href=&#34;https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html&#34;&gt;documentation&lt;/a&gt;, test some simpler use cases, then work back on my desired project.&lt;/p&gt;
+
+&lt;p&gt;I anticipate this will be my WGU capstone, so I&amp;rsquo;ll be working up lots of documentation along the way.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Hustle</title>

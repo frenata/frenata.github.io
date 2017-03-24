@@ -6,8 +6,89 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 04 Feb 2017 15:41:19 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 24 Mar 2017 15:05:02 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Lessons Learned</title>
+      <link>http://frenata.me/blog/Lessons-Learned/</link>
+      <pubDate>Fri, 24 Mar 2017 15:05:02 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/Lessons-Learned/</guid>
+      <description>&lt;p&gt;What I learned from volunteering at &lt;a href=&#34;../FOSS-ASIA-2017&#34;&gt;FOSS ASIA&lt;/a&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Say yes.
+
+&lt;ul&gt;
+&lt;li&gt;If you don&amp;rsquo;t know how to do that thing, be upfront about that lack, ask for advice in how to do it, then say yes anyway&lt;/li&gt;
+&lt;li&gt;But don&amp;rsquo;t wait to be asked, look for a need and try to help fill it.&lt;/li&gt;
+&lt;li&gt;Arriving early never hurts.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Talk about yourself.
+
+&lt;ul&gt;
+&lt;li&gt;It took me a few days to nail down a &amp;ldquo;here&amp;rsquo;s who I am/what I do/what I&amp;rsquo;m interested in&amp;rdquo; routine.&lt;/li&gt;
+&lt;li&gt;Cards are good if you have them, but so is a well-maintained LinkedIn.&lt;/li&gt;
+&lt;li&gt;Ask good questions about what other people are doing.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Start conversations.
+
+&lt;ul&gt;
+&lt;li&gt;If the room is full of developers, you&amp;rsquo;re probably far from the only introvert/shy person.&lt;/li&gt;
+&lt;li&gt;Ask around about social gatherings. At least one attendee came to the speaker/team-only event just because she asked about it.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>FOSS ASIA 2017</title>
+      <link>http://frenata.me/blog/FOSS-ASIA-2017/</link>
+      <pubDate>Fri, 24 Mar 2017 14:58:40 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/FOSS-ASIA-2017/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;../My-First-Conference&#34;&gt;My first conference&lt;/a&gt; had gone acceptably well, but I had resolved to &lt;strong&gt;be better&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;When the stars aligned and I was able to attend another conference this March, FOSSASIA 2017, I &lt;em&gt;was&lt;/em&gt; better. Drawing on yet another tidbit of advice (from where I know not), I decided that rather than just buying a ticket and attending the conference I would volunteer. Ideally this would force me to engage with people rather the particulars of technical talks.&lt;/p&gt;
+
+&lt;p&gt;There was plenty of opportunity before the conference to assist: most notably with the actual software that would power the registration and the event scheduling, but a brutal set of obligations all mananged to collide in the weeks beforehand and I didn&amp;rsquo;t participate. Instead, I arrived in Singapore two days early, ready to attend a volunteer briefing on Thursday, the day before the conference began. I made it to the venue, struggled to the rest of the team, and sat down for a coffee to communicate on the WhatsApp chat channel.&lt;/p&gt;
+
+&lt;p&gt;Pretty much because I was there, I was grabbed to help out with the wifi deployment and provisioning, and so I soon found myself scurrying around, plugging into WiFi access points, running new ethernet cabling, and crimping connectors. As these things go, there were last minute changes and issues to overcome, but overcome them we did: myself, another out of town volunteer, and two of the primary organizers. The most important thing I did that day? (Beyond having the 568-A/B standards memorized, which really didn&amp;rsquo;t matter that much.) I said yes when asked if I could help.&lt;/p&gt;
+
+&lt;p&gt;I spent the next day greeting every speaker, attendee, and exhibitor that came through the doors, directing them to the appropriate places, and solving problems like missing conference badges. &amp;ldquo;Wal-mart greeter&amp;rdquo; is perhaps not anyone&amp;rsquo;s idea of a great job, but it&amp;rsquo;s actually a pretty awesome gig to quickly writeup a custom badge for a sponsor from Google, or in a pinch help diagnose WiFi connectivity issues.&lt;/p&gt;
+
+&lt;p&gt;The second day, I was assigned to &amp;ldquo;moderate&amp;rdquo; the exhibtors hall, so I spent the day talking to various vendors, making sure they had what they needed, running errands, and generally trying to make their lives easier. And in the meantime I had plenty of opportunity to talk to people about some amazing projects: building radio telescopes to talk to amateur sattelites, &amp;ldquo;flying&amp;rdquo; a airplane with brainwaves, building a village in China using entirely open-source designs and tools, and doing augmented-reality with HTML/CSS.&lt;/p&gt;
+
+&lt;p&gt;I ambled into the conference on the third day a little bleary, having been kept up most of the night by an apparently all night party in the room next door at my hostel. I wasn&amp;rsquo;t scheduled for any tasks, so I thought I might have the chance to actually listen to some talks&amp;hellip; Well I sort of did. I was quickly grabbed and assigned to take the place of a missing volunteer to run the talks in the largest breakout room. What followed was a not-great morning of me stumbling through a job I didn&amp;rsquo;t expect, but again, I said yes.&lt;/p&gt;
+
+&lt;p&gt;In between many hours of hard work, rushed meals, and achey feet were evening social events where I had the chance to chat casually with people I&amp;rsquo;d met at various other times throughout the conference or meet others I hadn&amp;rsquo;t quite connected with. Highlights from these and other social ocassions:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;somehow finding myself in between an active Linux kernel developer and an active FreeBSD kernel developer discussing the relative merits of each ecosystem&lt;/li&gt;
+&lt;li&gt;an &amp;ldquo;American moment&amp;rdquo; between Jakarta-based me, a Singapore-based executive, and a Hong Kong-based developer where we shared how much we like visiting the USA but not actually living there&lt;/li&gt;
+&lt;li&gt;talking about the big project I&amp;rsquo;m working on with people actually familiar with the tech stack&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;But what &lt;a href=&#34;../Lessons-Learned&#34;&gt;did I learn&lt;/a&gt;?&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>My First Conference</title>
+      <link>http://frenata.me/blog/My-First-Conference/</link>
+      <pubDate>Fri, 24 Mar 2017 14:56:34 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/My-First-Conference/</guid>
+      <description>&lt;p&gt;Last August, at the first technical conference in my rebirthed career as a developer, I spent the entirety of the first day rushing about from session to session, taking notes about interesting ideas and spending most of the elaborate luncheon thinking about which talks I would listen to later that day. But while the tidbits of insight I gained were no doubt highly entertaining at the time, the only thing I can clearly recall 7 months later was a discussion of how Hollywood adapted its view of Computer Security over time.&lt;/p&gt;
+
+&lt;p&gt;Since that talk and my listing of films got me watching &lt;em&gt;Tron&lt;/em&gt; and &lt;em&gt;Space Camp&lt;/em&gt; for the first time I can&amp;rsquo;t entirely complain, but something was missing.&lt;/p&gt;
+
+&lt;p&gt;I spent that first night curled up with Google, trying to identify how better to engage in the later days of the conference. The clear answer shining through: people matter more than technical talks, so go talk to them! I did my best and connected with a well know personality who lived in the same city as me.&lt;/p&gt;
+
+&lt;p&gt;But believe it or not, walking up to strangers, introducing myself, and engaging in conversation is not a strength of mine. A shocking admission from a lifelong nerd, I know. I resolved to &lt;a href=&#34;../FOSS-ASIA-2017&#34;&gt;be better&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>elastic</title>

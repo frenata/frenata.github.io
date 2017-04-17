@@ -6,8 +6,84 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 Mar 2017 15:05:02 +0700</lastBuildDate>
+    <lastBuildDate>Mon, 17 Apr 2017 14:07:20 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Android Architecture, Part 2</title>
+      <link>http://frenata.me/school/android-architecture-2/</link>
+      <pubDate>Mon, 17 Apr 2017 14:07:20 +0700</pubDate>
+      
+      <guid>http://frenata.me/school/android-architecture-2/</guid>
+      <description>&lt;p&gt;After bulding the basics of my &lt;a href=&#34;../android-architecture-1&#34;&gt;android app&lt;/a&gt;, I had a simple app that could display/edit lists of school terms. The problem? The requirements specified that the app have terms, courses associated with each term, assessments associated with each course, and notes associated with each course &lt;em&gt;or&lt;/em&gt; assessment.&lt;/p&gt;
+
+&lt;p&gt;That was fine, after all I was armed with all kinds of SQL database design knowledge after 3 courses at WGU, so I rapidly stubbed out java classes for each of these entities. Each relationship was a simple many-to-one relationship, so &lt;code&gt;Course&lt;/code&gt; table needed to maintain a foreign key pointing to the associated &lt;code&gt;Term&lt;/code&gt;, the &lt;code&gt;Assessment&lt;/code&gt; table needed to maintain a foreign key pointing to the associated &lt;code&gt;Course&lt;/code&gt;, and so on.&lt;/p&gt;
+
+&lt;p&gt;Each class handled it&amp;rsquo;s own table definition rules, and my &lt;code&gt;DBHelper&lt;/code&gt; class now opened the database, then when needing to create or upgrade, called methods from each entitiy class to create each table. Add some sample data in my main activity&amp;rsquo;s &lt;code&gt;onCreate&lt;/code&gt; method, and&amp;hellip; &lt;code&gt;Exceptions: table course does not exist&lt;/code&gt;. Since the database already existed and I hadn&amp;rsquo;t incremented the verison number, rerunning my app and calling more table creation methods did nothing. My very hacky fix was to uninstall the app and then reload it onto the emulator, although I just now realized that a more sensible idea would have been to create a simple method in the &lt;code&gt;DBHelper&lt;/code&gt; to drop all the tables and delete the database, then tie this to a menu action. Lesson learned.&lt;/p&gt;
+
+&lt;p&gt;My database redefined, I turned to listing all the courses. And ran into the &lt;code&gt;ContentProvider&lt;/code&gt;, which in its &lt;code&gt;insert&lt;/code&gt;, &lt;code&gt;update&lt;/code&gt;, and &lt;code&gt;delete&lt;/code&gt; methods was referring directly to the &lt;code&gt;Term&lt;/code&gt; class. Did I need separate providers for each table? That didn&amp;rsquo;t seem right.&lt;/p&gt;
+
+&lt;p&gt;After chewing on the problem for a while (and sleeping on it, which always helps me), I settled on the pattern explained in &lt;a href=&#34;http://stackoverflow.com/questions/3814005/best-practices-for-exposing-multiple-tables-using-content-providers-in-android&#34;&gt;this stackoverflow post&lt;/a&gt;. I didn&amp;rsquo;t realize it at the time, but this style is used internally by android as well. An example, from my finished ContentProvider:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public int update(
+		Uri uri, 
+		ContentValues values, 
+		String selection, 
+		String[] selectionArgs) {
+
+	String table;
+
+	switch (uriMatcher.match(uri)) {
+		case TERMS:
+			table = Term.TABLE; break;
+		case COURSES:
+			table = Course.TABLE; break;
+		case ASSESSMENTS:
+			table = Assessment.TABLE; break;
+		case COURSE_NOTES:
+			table = CourseNote.TABLE; break;
+		case ASSESSMENT_NOTES:
+			table = AssessmentNote.TABLE; break;
+		default:
+			table = &amp;quot;&amp;quot;; break;
+	}
+	return !table.isEmpty() ?
+		database.update(table,
+				values,
+				selection,
+				selectionArgs) : 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This general pattern proved hugely useful, so that the &lt;code&gt;ContentProvider&lt;/code&gt; handled most aspects of interacting with the database correctly, so long as it was given the proper URI, which are defined as public constants in the &lt;code&gt;ContentProvider&lt;/code&gt; itself. Because it was also necessary for courses to understand what term they were in and build the appropriate WHERE clause, the classes are sadly fairly coupled together, but having the &lt;code&gt;ContentProvider&lt;/code&gt; handle most aspects of DB interaction is a step in the right direction. Further refactoring could likely reduce coupling throughout the codebase.&lt;/p&gt;
+
+&lt;p&gt;From this point on, I implemented the entire database structure as specified by the requirements, absent pictures in notes, which I decided to save for another day.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Android Architecture, Part 1</title>
+      <link>http://frenata.me/school/android-architecture-1/</link>
+      <pubDate>Sat, 15 Apr 2017 21:39:47 +0700</pubDate>
+      
+      <guid>http://frenata.me/school/android-architecture-1/</guid>
+      <description>&lt;p&gt;Frustrated by communication issues while working on my WGU capstone/thesis, I recently turned to the only other class I have left: Mobile Application Development. I was fairly excited by this (I get to build Android apps!), but the reality of the class was somewhat intimidating. There is no objective assessment, only a performance assessment that involves building an actual app. Fine. But provided materials are&amp;hellip;minimal. No problem, I thought, since android development is so popular there should be plenty of information freely available on the web!&lt;/p&gt;
+
+&lt;p&gt;While my original plan was to work through some of Udacity&amp;rsquo;s free material on Android, then to launch into the class project, I realized that the time left in my term was quickly running out. Not having time to learn it &amp;ldquo;the right way&amp;rdquo;, I resolved to &amp;ldquo;fake it until I made it,&amp;rdquo; passing the class, and revisiting android development proper when my time permits. My first step was to follow a tutorial to build a working app along similar lines to what I needed to eventually build. I pulled from two tutorials to get the basics rolling:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Lynda&amp;rsquo;s &lt;a href=&#34;https://www.lynda.com/Android-tutorials/Building-Note-Taking-App-Android/377485-2.html&#34;&gt;Note-Taking App&lt;/a&gt; video tutorial, which was specifically linked on the WGU course page&lt;/li&gt;
+&lt;li&gt;Vogella&amp;rsquo;s &lt;a href=&#34;http://www.vogella.com/tutorials/AndroidSQLite/article.html&#34;&gt;Android SQLite database tutorial&lt;/a&gt;, which is just text and lots of code samples, covering a variety of ways to interact with a SQLite database in Android&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I primarily followed the Lynda tutorials, adjusting and learning as I went. For instance, that tutorial uses a very simple DB table with just two columns: the text of the note and the id (primary key) of the note. For even the simplest of my tables I needed to store at least 4 pieces of information: a term title, start and end dates, and the id. Thus my app quickly diverged from the tutorial, with multiple relevant fields complicating the layout files. To list data, android provides some basic list layouts, but they hold only up to two pieces of info. Since I wanted to dispaly three pieces of information, I had to build my own custom list layout.&lt;/p&gt;
+
+&lt;p&gt;I kept the basic class structure the same, although looking forward somewhat I seperated my &lt;code&gt;TermTable&lt;/code&gt;, representing a single SQL table, from my &lt;code&gt;SchedulerDBHelper&lt;/code&gt;, which opens/creates/upgrades the database itself, and my &lt;code&gt;SchedulerProvider&lt;/code&gt;, which is a ContentProvider to allow &amp;ldquo;easy&amp;rdquo; access to the database. Early on, I also implemented a separate &lt;code&gt;Term&lt;/code&gt; class to handle bundling of the values from the &lt;code&gt;TermTable&lt;/code&gt; table, but I later merged these together into a single class called &lt;code&gt;Term&lt;/code&gt;, to handle all things related to a &amp;ldquo;term&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;From that point on, working through the rest of the tutorials was relatively straightforward, until I had a working app that let me display lists of terms and edit them, all backed by a SQLite database. But of course, this was only the beginning.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Lessons Learned</title>

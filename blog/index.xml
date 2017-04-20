@@ -6,11 +6,94 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 Mar 2017 15:05:02 +0700</lastBuildDate>
+    <lastBuildDate>Thu, 20 Apr 2017 22:37:08 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Lessons Learned</title>
+      <title>Speedrun: Timestamp Microservice in Go</title>
+      <link>http://frenata.me/blog/speedrun-timestamp/</link>
+      <pubDate>Thu, 20 Apr 2017 22:37:08 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/speedrun-timestamp/</guid>
+      <description>
+
+&lt;h3 id=&#34;why-go&#34;&gt;Why Go?&lt;/h3&gt;
+
+&lt;p&gt;Because I like it, that&amp;rsquo;s why! And it&amp;rsquo;s pragmatic but one-way-to-do-it spirit fits my personality. After spending months with Java for school it is an absolute joy to work with. I&amp;rsquo;ll touch on some of the more interesting things I encountered while working on the project. The details are in the source of course, which I worked hard to keep readable and annotated.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://timestamp-go.herokuapp.com/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/fcc/tree/master/timestamp/go&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;heroku&#34;&gt;Heroku&lt;/h3&gt;
+
+&lt;p&gt;I had not used Heroku previously, so I spent quite a bit of time just getting started with it. Fortuanely, while not as easy to work with as &lt;a href=&#34;http://surge.sh&#34;&gt;surge.sh&lt;/a&gt; I didn&amp;rsquo;t find it too difficult to get going with. But there were a few snags. Go tooling aside, it wasn&amp;rsquo;t quite as simple as pointing heroku at a binary, but in the end, it wasn&amp;rsquo;t much different than that either.&lt;/p&gt;
+
+&lt;p&gt;There were a few different ways to signal to Heroku that the deployed app is written in Go, but I found the simplest, especially since I didn&amp;rsquo;t plan on using anything other than the standard library, was to use &lt;code&gt;gb&lt;/code&gt;. The instructions for doing so, summarized:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;create a &lt;code&gt;src&lt;/code&gt; directory at your project root&lt;/li&gt;
+&lt;li&gt;write some &lt;code&gt;.go&lt;/code&gt; files inside &lt;code&gt;src&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;at least one of which should compile into a binary, let&amp;rsquo;s call it &lt;code&gt;foo&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;create a file called &lt;code&gt;Procfile&lt;/code&gt; in the project root that says: &lt;code&gt;web: foo&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And that&amp;rsquo;s it!&lt;/p&gt;
+
+&lt;h3 id=&#34;serving-millions&#34;&gt;Serving Millions&lt;/h3&gt;
+
+&lt;p&gt;Serving http is dead simple with Go, here is the entirety of a working webserver function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func main() {
+	port := os.Getenv(&amp;quot;PORT&amp;quot;)
+	
+	http.HandleFunc(&amp;quot;/&amp;quot;, timestamp) 
+	http.ListenAndServe(&amp;quot;:&amp;quot;+port, nil)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Grabbing the port from the environment was another snag I ran into. You won&amp;rsquo;t know what port your particular app is being served from, so it needs to be grabbed dynamically. &lt;code&gt;timestamp&lt;/code&gt; in the above code is the name of a function that does the work of reading requests and writing responses. Originally all my logic was in this function, but I later refactored it away so that &lt;code&gt;timestamp&lt;/code&gt; is only concerned with http and any business logic is handled elsewhere.&lt;/p&gt;
+
+&lt;h3 id=&#34;jason-and-the-argonauts&#34;&gt;Jason and the Argonauts&lt;/h3&gt;
+
+&lt;p&gt;Go also has some pleasant tools to work with JSON. I defined a concrete type to hold the data:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type TimeResponse struct {
+	Unix    *string `json:&amp;quot;unix&amp;quot;`
+	Natural *string `json:&amp;quot;natural&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Converting a value of this type to JSON notation can be performed with &lt;code&gt;json.MarshalIndent(someResponseValue, &amp;quot;&amp;quot;, &amp;quot;    &amp;quot;)&lt;/code&gt; &lt;code&gt;json.Marshal&lt;/code&gt; would do the same thing without the extra arguments and thus no pretty printing.&lt;/p&gt;
+
+&lt;h3 id=&#34;time-flies-when-you-re-coding&#34;&gt;Time Flies When You&amp;rsquo;re Coding&lt;/h3&gt;
+
+&lt;p&gt;Go has a bit of unique way to represent time formats (any string representation of a certain fixed date), but I took advantage of the relative ease of defining them to extend the user story beyond the requirements, allowing a great variety of date formats to be parsed correctly. &lt;code&gt;https://timestamp-go.herokuapp.com/12/25/2017/&lt;/code&gt; was particularly fun to get working. Great apologies to the rest of the world, but I choose the American way to parse that style of date.&lt;/p&gt;
+
+&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
+
+&lt;p&gt;How could this particular project be improved?&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The instructions page is pure text, so even a little html and css would make it more pleasant to read.&lt;/li&gt;
+&lt;li&gt;More time formats!&lt;/li&gt;
+&lt;li&gt;Optional query string to request a certain format of natural date/time.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;gitter-done&#34;&gt;Gitter Done&lt;/h3&gt;
+
+&lt;p&gt;A brief technical note, for myself as much as anything, since I&amp;rsquo;m holding the code for this in my overarching fcc repo, I used a git subtree to push just the relevant code to a branch. Heroku is configured to do automatic deployments from this branch. The incantation is:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git subtree push --prefix timestamp/go/ origin timestamp-go
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This &lt;em&gt;must&lt;/em&gt; be performed in the repo root, but will push only a specific directory &lt;code&gt;timestamp/go/&lt;/code&gt; to a specific branch &lt;code&gt;timestamp-go&lt;/code&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>FOSSASIA: Lessons Learned</title>
       <link>http://frenata.me/blog/Lessons-Learned/</link>
       <pubDate>Fri, 24 Mar 2017 15:05:02 +0700</pubDate>
       

@@ -6,8 +6,73 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 20 Apr 2017 22:37:08 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 21 Apr 2017 17:17:53 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Speedrun: Request Headers Microservice in Go</title>
+      <link>http://frenata.me/blog/speedrun-request-headers/</link>
+      <pubDate>Fri, 21 Apr 2017 17:17:53 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/speedrun-request-headers/</guid>
+      <description>
+
+&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://request-headers-go.herokuapp.com/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/fcc/tree/master/request-headers/go&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;wherefore-art-thou-x-forwarded-for&#34;&gt;Wherefore art thou X-Forwarded-For?&lt;/h3&gt;
+
+&lt;p&gt;Apparently the client IP can be sent several different ways, so it was necessary to check various headers. Also along these lines, none of these headers are sent when browsing locally via &lt;code&gt;heroku local&lt;/code&gt;, meaning the only way I could test that this was working properly was &amp;ldquo;in production.&amp;rdquo; Decidedly not ideal.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;rsquo;s the full text of my function to fetch the IP address:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func getIP(headers http.Header) *string {
+	possibleKeys := []string{
+		&amp;quot;Remote_Addr&amp;quot;,
+		&amp;quot;Client-IP&amp;quot;,
+		&amp;quot;X-Forwarded-For&amp;quot;,
+	}
+
+	for _, key := range possibleKeys {
+		if ip := headers.Get(key); ip != &amp;quot;&amp;quot; {
+			comma := strings.Index(ip, &amp;quot;,&amp;quot;)
+			if comma != -1 {
+				ip = ip[:comma]
+			}
+			return &amp;amp;ip
+		}
+	}
+
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Given a HTTP header object, this will check the various possible keys, returning the value if the header ccontains that key. There&amp;rsquo;s also a small check for a comma that will ensure only &lt;em&gt;1&lt;/em&gt; address is returned.&lt;/p&gt;
+
+&lt;h3 id=&#34;yes-i-m-pointing-at-you&#34;&gt;Yes, I&amp;rsquo;m Pointing at You&lt;/h3&gt;
+
+&lt;p&gt;Of some note is that this function returns &lt;code&gt;*string&lt;/code&gt; rather than &lt;code&gt;string&lt;/code&gt;. That is, it returns a &lt;em&gt;pointer&lt;/em&gt; to a string rather than a string. This is also why &lt;code&gt;return &amp;amp;ip&lt;/code&gt; is written the way it is. It returns not the string value contained in &lt;code&gt;ip&lt;/code&gt; but the address where this value is stored.&lt;/p&gt;
+
+&lt;p&gt;The reason for this is so that if the IP is not found for some reason, this function can return &lt;code&gt;nil&lt;/code&gt; (aka &lt;code&gt;null&lt;/code&gt;) rather than some specific string value. My Response object accordingly holds &lt;em&gt;pointers&lt;/em&gt; to strings, and when it is &lt;code&gt;Marshal&lt;/code&gt;ed into JSON a &lt;code&gt;nil&lt;/code&gt; value in the IP field will be correctly returned as &lt;code&gt;&amp;quot;ipaddress&amp;quot;: null&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;requirement-clarity&#34;&gt;Requirement: Clarity&lt;/h3&gt;
+
+&lt;p&gt;It wasn&amp;rsquo;t entirely clear, from the user stories given, exactly what &amp;ldquo;operating system&amp;rdquo; data is desired. I made a choice based on the structure of the &lt;code&gt;User-Agent&lt;/code&gt; header, but it could be different. The same is true for my choice to strip out extra IP addresses.&lt;/p&gt;
+
+&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Find a way to test client IP when working with a local deployment.&lt;/li&gt;
+&lt;li&gt;Possible: display the name of a language instead of a locale string. ie, &amp;ldquo;English&amp;rdquo; instead of &amp;ldquo;en-US&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;Add other interesting headers to the JSON response.&lt;/li&gt;
+&lt;li&gt;Add some unit tests, by manually constructing an HTTP header and ensuring that the returned values are accurate.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Speedrun: Timestamp Microservice in Go</title>

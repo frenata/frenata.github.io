@@ -7,12 +7,12 @@
   </url>
   
   <url>
-    <loc>http://frenata.me/school/android-architecture-2/</loc>
+    <loc>http://frenata.me/blog/android-architecture-2/</loc>
     <lastmod>2017-04-17T14:07:20+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://frenata.me/school/android-architecture-1/</loc>
+    <loc>http://frenata.me/blog/android-architecture-1/</loc>
     <lastmod>2017-04-15T21:39:47+07:00</lastmod>
   </url>
   
@@ -32,27 +32,27 @@
   </url>
   
   <url>
-    <loc>http://frenata.me/school/elastic/</loc>
+    <loc>http://frenata.me/blog/elastic/</loc>
     <lastmod>2017-02-04T15:41:19+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://frenata.me/school/Hustle/</loc>
+    <loc>http://frenata.me/blog/Hustle/</loc>
     <lastmod>2017-01-23T12:08:06+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://frenata.me/school/the-rabbit/</loc>
+    <loc>http://frenata.me/blog/the-rabbit/</loc>
     <lastmod>2016-12-20T11:10:31+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://frenata.me/school/a-day-with-elixir/</loc>
+    <loc>http://frenata.me/blog/a-day-with-elixir/</loc>
     <lastmod>2016-12-18T22:42:47+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://frenata.me/school/in-media-res/</loc>
+    <loc>http://frenata.me/blog/in-media-res/</loc>
     <lastmod>2016-12-15T22:06:40+07:00</lastmod>
   </url>
   
@@ -65,16 +65,6 @@
   <url>
     <loc>http://frenata.me/</loc>
     <lastmod>2017-04-20T22:37:08+07:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://frenata.me/mail/</loc>
-  </url>
-  
-  <url>
-    <loc>http://frenata.me/school/</loc>
-    <lastmod>2017-04-17T14:07:20+07:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -94,10 +94,10 @@
     
     <item>
       <title>Android Architecture, Part 2</title>
-      <link>http://frenata.me/school/android-architecture-2/</link>
+      <link>http://frenata.me/blog/android-architecture-2/</link>
       <pubDate>Mon, 17 Apr 2017 14:07:20 +0700</pubDate>
       
-      <guid>http://frenata.me/school/android-architecture-2/</guid>
+      <guid>http://frenata.me/blog/android-architecture-2/</guid>
       <description>&lt;p&gt;After bulding the basics of my &lt;a href=&#34;../android-architecture-1&#34;&gt;android app&lt;/a&gt;, I had a simple app that could display/edit lists of school terms. The problem? The requirements specified that the app have terms, courses associated with each term, assessments associated with each course, and notes associated with each course &lt;em&gt;or&lt;/em&gt; assessment.&lt;/p&gt;
 
 &lt;p&gt;That was fine, after all I was armed with all kinds of SQL database design knowledge after 3 courses at WGU, so I rapidly stubbed out java classes for each of these entities. Each relationship was a simple many-to-one relationship, so &lt;code&gt;Course&lt;/code&gt; table needed to maintain a foreign key pointing to the associated &lt;code&gt;Term&lt;/code&gt;, the &lt;code&gt;Assessment&lt;/code&gt; table needed to maintain a foreign key pointing to the associated &lt;code&gt;Course&lt;/code&gt;, and so on.&lt;/p&gt;
@@ -147,10 +147,10 @@ public int update(
     
     <item>
       <title>Android Architecture, Part 1</title>
-      <link>http://frenata.me/school/android-architecture-1/</link>
+      <link>http://frenata.me/blog/android-architecture-1/</link>
       <pubDate>Sat, 15 Apr 2017 21:39:47 +0700</pubDate>
       
-      <guid>http://frenata.me/school/android-architecture-1/</guid>
+      <guid>http://frenata.me/blog/android-architecture-1/</guid>
       <description>&lt;p&gt;Frustrated by communication issues while working on my WGU capstone/thesis, I recently turned to the only other class I have left: Mobile Application Development. I was fairly excited by this (I get to build Android apps!), but the reality of the class was somewhat intimidating. There is no objective assessment, only a performance assessment that involves building an actual app. Fine. But provided materials are&amp;hellip;minimal. No problem, I thought, since android development is so popular there should be plenty of information freely available on the web!&lt;/p&gt;
 
 &lt;p&gt;While my original plan was to work through some of Udacity&amp;rsquo;s free material on Android, then to launch into the class project, I realized that the time left in my term was quickly running out. Not having time to learn it &amp;ldquo;the right way&amp;rdquo;, I resolved to &amp;ldquo;fake it until I made it,&amp;rdquo; passing the class, and revisiting android development proper when my time permits. My first step was to follow a tutorial to build a working app along similar lines to what I needed to eventually build. I pulled from two tutorials to get the basics rolling:&lt;/p&gt;
@@ -251,10 +251,10 @@ public int update(
     
     <item>
       <title>elastic</title>
-      <link>http://frenata.me/school/elastic/</link>
+      <link>http://frenata.me/blog/elastic/</link>
       <pubDate>Sat, 04 Feb 2017 15:41:19 +0700</pubDate>
       
-      <guid>http://frenata.me/school/elastic/</guid>
+      <guid>http://frenata.me/blog/elastic/</guid>
       <description>&lt;p&gt;I&amp;rsquo;m diving into learning the Elastic stack: Logstash, Elasticsearch, Kibana. My aim is to use it to enable the local school here to extract useful information from the reams of lesson plan .docs they have laying around. Useless data right now.&lt;/p&gt;
 
 &lt;p&gt;There&amp;rsquo;s &lt;em&gt;a bunch&lt;/em&gt; going on, and the actual process I&amp;rsquo;ll need to follow to ETL the data I do have into a usuable state isn&amp;rsquo;t entirely clear to me yet. I know I can just throw it into elastic and get full text search, but the data is semi-structured already, so I&amp;rsquo;d like to be able to extract ESLRs, times, teacher names into fields outright.&lt;/p&gt;
@@ -267,10 +267,10 @@ public int update(
     
     <item>
       <title>Hustle</title>
-      <link>http://frenata.me/school/Hustle/</link>
+      <link>http://frenata.me/blog/Hustle/</link>
       <pubDate>Mon, 23 Jan 2017 12:08:06 +0700</pubDate>
       
-      <guid>http://frenata.me/school/Hustle/</guid>
+      <guid>http://frenata.me/blog/Hustle/</guid>
       <description>&lt;p&gt;After spending what seemed like the entire month of December and about half of January doing nothing but schoolwork, life is calming down. Between me and graduation are only 3 things:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -297,10 +297,10 @@ public int update(
     
     <item>
       <title>the rabbit</title>
-      <link>http://frenata.me/school/the-rabbit/</link>
+      <link>http://frenata.me/blog/the-rabbit/</link>
       <pubDate>Tue, 20 Dec 2016 11:10:31 +0700</pubDate>
       
-      <guid>http://frenata.me/school/the-rabbit/</guid>
+      <guid>http://frenata.me/blog/the-rabbit/</guid>
       <description>&lt;p&gt;The goal is to sit and pass CompTIA&amp;rsquo;s Security+ by the end of the week. Scheduling shouldn&amp;rsquo;t be a problem, but I&amp;rsquo;m only halfway through the material an Tuesday morning. I&amp;rsquo;ll need to prove I&amp;rsquo;m ready by the end of Wednesday.&lt;/p&gt;
 
 &lt;p&gt;Away!&lt;/p&gt;
@@ -309,10 +309,10 @@ public int update(
     
     <item>
       <title>a day with elixir</title>
-      <link>http://frenata.me/school/a-day-with-elixir/</link>
+      <link>http://frenata.me/blog/a-day-with-elixir/</link>
       <pubDate>Sun, 18 Dec 2016 22:42:47 +0700</pubDate>
       
-      <guid>http://frenata.me/school/a-day-with-elixir/</guid>
+      <guid>http://frenata.me/blog/a-day-with-elixir/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve pushed hard at schoolwork for the past two weeks, and a day of Rest presented itself. No new studies, no reviews, no school.&lt;/p&gt;
 
 &lt;p&gt;But what to do?&lt;/p&gt;
@@ -329,25 +329,16 @@ public int update(
     
     <item>
       <title>in media res</title>
-      <link>http://frenata.me/school/in-media-res/</link>
+      <link>http://frenata.me/blog/in-media-res/</link>
       <pubDate>Thu, 15 Dec 2016 22:06:40 +0700</pubDate>
       
-      <guid>http://frenata.me/school/in-media-res/</guid>
+      <guid>http://frenata.me/blog/in-media-res/</guid>
       <description>&lt;p&gt;Less than a month has passed of my second term at &lt;a href=&#34;//wgu.edu&#34;&gt;WGU&lt;/a&gt;, and I&amp;rsquo;m just about done with my enrolled classes for the 6 month term. A couple of database classes are in hand, as is CompTIA&amp;rsquo;s Network+ certification, all that remains officially is a database adminstration class on the hairier parts of SQL.&lt;/p&gt;
 
 &lt;p&gt;Of course I don&amp;rsquo;t plan on stopping there. The winter school break presents me with a rare opportunity&amp;ndash;the chance to schedule certification tests during the work week without having to worry about who will take care of the baby. To that end, my goal is to further finish the Security+ and Project+ certifications before 9 January. With focus, it should just be possible.&lt;/p&gt;
 
 &lt;p&gt;I started at WGU in March of 2016, all the GenEd credits out of the way and about 95 credits to do in order to finish a bachelor&amp;rsquo;s degree long delayed. 44 remain, and by early January only 33 will remain. My longterm aim is now to finish the entirety of the degree plan by the end of May, marking 15 months and 2 terms of study.&lt;/p&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>Mail</title>
-      <link>http://frenata.me/mail/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://frenata.me/mail/</guid>
-      <description></description>
     </item>
     
     <item>

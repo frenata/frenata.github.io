@@ -6,88 +6,8 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 23 Apr 2017 17:24:38 +0700</lastBuildDate>
+    <lastBuildDate>Sun, 23 Apr 2017 10:09:32 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Android Architecture, Part 3</title>
-      <link>http://frenata.me/blog/android-architecture-3/</link>
-      <pubDate>Sun, 23 Apr 2017 17:24:38 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/android-architecture-3/</guid>
-      <description>
-
-&lt;h3 id=&#34;previously&#34;&gt;Previously&lt;/h3&gt;
-
-&lt;p&gt;After implementing a &lt;a href=&#34;../android-architecture-1&#34;&gt;class hierarchy&lt;/a&gt; and a unified point of database access via a &lt;a href=&#34;../android-architecture-2&#34;&gt;Content Provider&lt;/a&gt; the core mechanisms of my app were in place: the ability to do basic CRUD (Create, Retrieve, Update, Delete) actions on the various types in my database. It was time to put the finishing touches, not all of which were trivial.&lt;/p&gt;
-
-&lt;h3 id=&#34;time-keeps-ticking&#34;&gt;Time Keeps Ticking&amp;hellip;&lt;/h3&gt;
-
-&lt;p&gt;The first major task was to enable the user to create notifications for the various data types, most of which had date fields attached. However, in order to get the database functionality working, I had skipped any attempt at verifying user entered dates, which were stored in the SQLite database as plain strings. While a well intentioned user would no doubt enter real dates instead of &lt;code&gt;&amp;quot;next week&amp;quot;&lt;/code&gt;, it didn&amp;rsquo;t seem right to cause notifications to fail for incorrectly written dates, either silently or explicitly.&lt;/p&gt;
-
-&lt;p&gt;Related was the question of the order of items on the lists of terms/courses/assessments. Keeping with &amp;ldquo;getting it done&amp;rdquo; I had sorted them simply by the name of the entry, knowing I would eventually want to &amp;ldquo;do it right&amp;rdquo;. That &lt;em&gt;time&lt;/em&gt; was of course now.&lt;/p&gt;
-
-&lt;p&gt;First I enforced that user entered dates be in a specific format, &lt;code&gt;23 April 2017&lt;/code&gt;. But while simple to enter by text and obvious to read, this type of data is not easily sortable. I needed to translate dates into something more like a timestamp for storage in the SQLite database. Thus was a class born &lt;code&gt;DateFormatter&lt;/code&gt;, which contained several static helper methods to translate dates from my chosen human readable format, to a timestamp, and back again. I would also add methods to translate dates into Unix epoch timestamps, since this is how I would schedule notifications.&lt;/p&gt;
-
-&lt;h3 id=&#34;notify-me&#34;&gt;Notify Me&lt;/h3&gt;
-
-&lt;p&gt;Actually getting notifications working wasn&amp;rsquo;t entirely trivial either, but not from a coding standpoint. This was the first time I ran into the stumbling block of the Internet: host to information about many different ways of working with Android apps, all from different APIs and few marked clearly.&lt;/p&gt;
-
-&lt;p&gt;I pressed on, found a strategy that worked and implemented it. Testing it consisted of forcing the menu items to schedule notifications not on the date specified, but some fixed amount of time, say 5 seconds, after &lt;code&gt;SystemClock.elapsedRealtime()&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h3 id=&#34;worth-a-thousand-sloc&#34;&gt;Worth a Thousand SLOC&lt;/h3&gt;
-
-&lt;p&gt;Next up was attaching camera photos to notes. I had kept putting this off because it felt like it would be complicated, but truly Android makes the simple things complicated and the complicated things simple. The actual code to call out to the camera to take a picture?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public void takePicture(View view) {
-	Intent takePictureIntent = 
-		new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-	if (takePictureIntent.resolveActivity(
-				getPackageManager()) != null) {
-		startActivityForResult(
-				takePictureIntent, 
-				REQUEST_IMAGE_CAPTURE);
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Taking the image and forcing it into and out of the database was somewhat more involved, but not very. SQL has a datatype &lt;code&gt;blob&lt;/code&gt; for a reason. (Though &lt;em&gt;better&lt;/em&gt; practice would probably have been to save a URI for the photo)&lt;/p&gt;
-
-&lt;p&gt;SMS was scarely more complicated:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;private void sendSMS() {
-	Uri uri = Uri.parse(&amp;quot;content://contacts&amp;quot;);
-	Intent intent = new Intent(Intent.ACTION_PICK, uri);
-	intent.setType(
-			ContactsContract.
-			CommonDataKinds.
-			Phone.CONTENT_TYPE);
-	startActivityForResult(intent, 1);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;minor-minor-minor&#34;&gt;Minor Minor Minor&lt;/h3&gt;
-
-&lt;p&gt;There were a few other minor details to fulfill various requirements or my own sense of pride:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;finding something semi-reasonable to store not in the SQLite database, but with SharedPrefs&lt;/li&gt;
-&lt;li&gt;making sure that somewhere I was using an &lt;code&gt;ArrayList&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;fixing a nagging &lt;code&gt;InternalException&lt;/code&gt; that had not disrupted anything but been hitting the logs since the beginning of the project&lt;/li&gt;
-&lt;li&gt;validating deletion of database items to prevent orphaned data&lt;/li&gt;
-&lt;li&gt;adding a wider selection of sample data&lt;/li&gt;
-&lt;li&gt;icons&lt;/li&gt;
-&lt;li&gt;reducing some layout duplication&lt;/li&gt;
-&lt;li&gt;refactoring the massive amount of duplicated code in the &lt;code&gt;ContentProvider&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;wrapping-it-up-in-an-apk&#34;&gt;Wrapping it up in an APK&lt;/h3&gt;
-
-&lt;p&gt;Ultimately I learned a lot, including that working with XML is not my idea of fun and that mobile app development might not be either. You can certainly develop something rapidly if you know what you&amp;rsquo;re doing, but boilerplate is everywhere. Android Studio seems almost a necessity, just to keep track of the massive Android library. Discerning which information is from too far in the past to be of use, which information is for an API too far in the future to be of use, and which information is just right is a massive pain.&lt;/p&gt;
-
-&lt;p&gt;Making it all look good is certainly not as easy as it looks. It may be some time before I revisit Android development, but I&amp;rsquo;m glad I was pushed to do it.&lt;/p&gt;
-</description>
-    </item>
     
     <item>
       <title>Recurse Center: Accepted</title>
@@ -276,6 +196,86 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;This &lt;em&gt;must&lt;/em&gt; be performed in the repo root, but will push only a specific directory &lt;code&gt;timestamp/go/&lt;/code&gt; to a specific branch &lt;code&gt;timestamp-go&lt;/code&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Android Architecture, Part 3</title>
+      <link>http://frenata.me/blog/android-architecture-3/</link>
+      <pubDate>Thu, 20 Apr 2017 20:37:08 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/android-architecture-3/</guid>
+      <description>
+
+&lt;h3 id=&#34;previously&#34;&gt;Previously&lt;/h3&gt;
+
+&lt;p&gt;After implementing a &lt;a href=&#34;../android-architecture-1&#34;&gt;class hierarchy&lt;/a&gt; and a unified point of database access via a &lt;a href=&#34;../android-architecture-2&#34;&gt;Content Provider&lt;/a&gt; the core mechanisms of my app were in place: the ability to do basic CRUD (Create, Retrieve, Update, Delete) actions on the various types in my database. It was time to put the finishing touches, not all of which were trivial.&lt;/p&gt;
+
+&lt;h3 id=&#34;time-keeps-ticking&#34;&gt;Time Keeps Ticking&amp;hellip;&lt;/h3&gt;
+
+&lt;p&gt;The first major task was to enable the user to create notifications for the various data types, most of which had date fields attached. However, in order to get the database functionality working, I had skipped any attempt at verifying user entered dates, which were stored in the SQLite database as plain strings. While a well intentioned user would no doubt enter real dates instead of &lt;code&gt;&amp;quot;next week&amp;quot;&lt;/code&gt;, it didn&amp;rsquo;t seem right to cause notifications to fail for incorrectly written dates, either silently or explicitly.&lt;/p&gt;
+
+&lt;p&gt;Related was the question of the order of items on the lists of terms/courses/assessments. Keeping with &amp;ldquo;getting it done&amp;rdquo; I had sorted them simply by the name of the entry, knowing I would eventually want to &amp;ldquo;do it right&amp;rdquo;. That &lt;em&gt;time&lt;/em&gt; was of course now.&lt;/p&gt;
+
+&lt;p&gt;First I enforced that user entered dates be in a specific format, &lt;code&gt;23 April 2017&lt;/code&gt;. But while simple to enter by text and obvious to read, this type of data is not easily sortable. I needed to translate dates into something more like a timestamp for storage in the SQLite database. Thus was a class born &lt;code&gt;DateFormatter&lt;/code&gt;, which contained several static helper methods to translate dates from my chosen human readable format, to a timestamp, and back again. I would also add methods to translate dates into Unix epoch timestamps, since this is how I would schedule notifications.&lt;/p&gt;
+
+&lt;h3 id=&#34;notify-me&#34;&gt;Notify Me&lt;/h3&gt;
+
+&lt;p&gt;Actually getting notifications working wasn&amp;rsquo;t entirely trivial either, but not from a coding standpoint. This was the first time I ran into the stumbling block of the Internet: host to information about many different ways of working with Android apps, all from different APIs and few marked clearly.&lt;/p&gt;
+
+&lt;p&gt;I pressed on, found a strategy that worked and implemented it. Testing it consisted of forcing the menu items to schedule notifications not on the date specified, but some fixed amount of time, say 5 seconds, after &lt;code&gt;SystemClock.elapsedRealtime()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;worth-a-thousand-sloc&#34;&gt;Worth a Thousand SLOC&lt;/h3&gt;
+
+&lt;p&gt;Next up was attaching camera photos to notes. I had kept putting this off because it felt like it would be complicated, but truly Android makes the simple things complicated and the complicated things simple. The actual code to call out to the camera to take a picture?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public void takePicture(View view) {
+	Intent takePictureIntent = 
+		new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	if (takePictureIntent.resolveActivity(
+				getPackageManager()) != null) {
+		startActivityForResult(
+				takePictureIntent, 
+				REQUEST_IMAGE_CAPTURE);
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Taking the image and forcing it into and out of the database was somewhat more involved, but not very. SQL has a datatype &lt;code&gt;blob&lt;/code&gt; for a reason. (Though &lt;em&gt;better&lt;/em&gt; practice would probably have been to save a URI for the photo)&lt;/p&gt;
+
+&lt;p&gt;SMS was scarely more complicated:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private void sendSMS() {
+	Uri uri = Uri.parse(&amp;quot;content://contacts&amp;quot;);
+	Intent intent = new Intent(Intent.ACTION_PICK, uri);
+	intent.setType(
+			ContactsContract.
+			CommonDataKinds.
+			Phone.CONTENT_TYPE);
+	startActivityForResult(intent, 1);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;minor-minor-minor&#34;&gt;Minor Minor Minor&lt;/h3&gt;
+
+&lt;p&gt;There were a few other minor details to fulfill various requirements or my own sense of pride:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;finding something semi-reasonable to store not in the SQLite database, but with SharedPrefs&lt;/li&gt;
+&lt;li&gt;making sure that somewhere I was using an &lt;code&gt;ArrayList&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;fixing a nagging &lt;code&gt;InternalException&lt;/code&gt; that had not disrupted anything but been hitting the logs since the beginning of the project&lt;/li&gt;
+&lt;li&gt;validating deletion of database items to prevent orphaned data&lt;/li&gt;
+&lt;li&gt;adding a wider selection of sample data&lt;/li&gt;
+&lt;li&gt;icons&lt;/li&gt;
+&lt;li&gt;reducing some layout duplication&lt;/li&gt;
+&lt;li&gt;refactoring the massive amount of duplicated code in the &lt;code&gt;ContentProvider&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;wrapping-it-up-in-an-apk&#34;&gt;Wrapping it up in an APK&lt;/h3&gt;
+
+&lt;p&gt;Ultimately I learned a lot, including that working with XML is not my idea of fun and that mobile app development might not be either. You can certainly develop something rapidly if you know what you&amp;rsquo;re doing, but boilerplate is everywhere. Android Studio seems almost a necessity, just to keep track of the massive Android library. Discerning which information is from too far in the past to be of use, which information is for an API too far in the future to be of use, and which information is just right is a massive pain.&lt;/p&gt;
+
+&lt;p&gt;Making it all look good is certainly not as easy as it looks. It may be some time before I revisit Android development, but I&amp;rsquo;m glad I was pushed to do it.&lt;/p&gt;
 </description>
     </item>
     

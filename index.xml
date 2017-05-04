@@ -6,8 +6,112 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 23 Apr 2017 10:09:32 +0700</lastBuildDate>
+    <lastBuildDate>Thu, 04 May 2017 14:51:44 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Speedrun: URL Shortener</title>
+      <link>http://frenata.me/blog/speedrun-shortener/</link>
+      <pubDate>Thu, 04 May 2017 14:51:44 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/speedrun-shortener/</guid>
+      <description>
+
+&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/tiny/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/tiny&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;one-repo-to-rule-them-all&#34;&gt;One Repo to Rule Them All&lt;/h3&gt;
+
+&lt;p&gt;I spent a good deal of time before/during/after writing the URL shortener itself on infrastructure, so it seems reasonable to discuss it here. Working with subtrees and orphaned branches was a bit annoying on my previous speedrun attempts, and since the &lt;em&gt;final&lt;/em&gt; objective was to unite all the projects together anyway&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;I decided to do it early.&lt;/p&gt;
+
+&lt;p&gt;First, I got my heroku account verified and my own domain name pointing to one of my projects there.&lt;/p&gt;
+
+&lt;p&gt;Then I set up a new git repo, and merged the previous two orphaned branches into it.&lt;/p&gt;
+
+&lt;p&gt;Then I reorganized my existing code into packages, a &lt;code&gt;main&lt;/code&gt; package with that distributed routes to other packages, each of which would handle its own microservice. Here&amp;rsquo;s what my new main function looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func main() {
+	// get bound port of host system
+	port := os.Getenv(&amp;quot;PORT&amp;quot;)
+
+	http.HandleFunc(&amp;quot;/&amp;quot;, index)
+	http.HandleFunc(timestamp.ROUTE, timestamp.Handler)
+	http.HandleFunc(headers.ROUTE, headers.Handler)
+	http.HandleFunc(tiny.ROUTE, tiny.Handler)
+	log.Fatal(http.ListenAndServe(&amp;quot;:&amp;quot;+port, nil))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Simple and sweet, all the logic internal to the services is contained in those services, including the routes they should be served on!&lt;/p&gt;
+
+&lt;h3 id=&#34;persistence-pays&#34;&gt;Persistence Pays&lt;/h3&gt;
+
+&lt;p&gt;I knew that a critical question was data persistence, and I also knew that I wanted to do this with a minimum of fuss, as befits a &amp;ldquo;speed run,&amp;rdquo; so I decided not to skip using a database&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;But since heroku pulls things down after inactivity on the free tier, I needed at least some kind of persistence, or the generated short addresses would likely only last as long as a dyno was active. So I decided to do the simplest possible thing, and just write to a file. This would almost certainly be a &lt;em&gt;terrible&lt;/em&gt; idea in any kind of production server due to a variety of threading issues, but I determined that it was acceptable for what I viewed as a proof of concept.&lt;/p&gt;
+
+&lt;p&gt;For doing this write I used the following function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func writeDB(sr ShortenerResponse) {
+	f, err := os.OpenFile(DB, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	data, _ := json.Marshal(sr)
+	if _, err = f.Write(append(data, &#39;\n&#39;)); err != nil {
+		panic(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In short, this opens a file in &amp;ldquo;append&amp;rdquo; mode, creating it if it doesn&amp;rsquo;t already exist, and writes a JSON object to the file, being sure to close this file before the function ends (the purpose of &lt;code&gt;defer f.Close()&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;Another function &lt;code&gt;init&lt;/code&gt;, which in go runs only when the package is first loaded, reads from this same file (if it exists) and loads the contents into memory.&lt;/p&gt;
+
+&lt;h3 id=&#34;map-the-world&#34;&gt;Map the World!&lt;/h3&gt;
+
+&lt;p&gt;The objects themselves were built from a now familiar go &lt;code&gt;struct&lt;/code&gt; with JSON tags:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type ShortenerResponse struct {
+	Original *string `json:&amp;quot;original_url&amp;quot;`
+	Short    *string `json:&amp;quot;short_url&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This data structure is essentially only used when marshaling to JSON for the response to a client, or for unmarshalling the contents of my &amp;ldquo;database file&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;For actually doing the work of redirect on demand, I used a map, that takes &lt;code&gt;string&lt;/code&gt;s and translates them directly into other &lt;code&gt;string&lt;/code&gt;s. In short: a requested short URL redirects to the long URL without bothering to iterate over anything.&lt;/p&gt;
+
+&lt;h3 id=&#34;what-happens&#34;&gt;What Happens?&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;a request is routed to the handler function&lt;/li&gt;
+&lt;li&gt;the handler checks the map of URLs, and if a match is found, it just redirects to the long URL&lt;/li&gt;
+&lt;li&gt;or it calls &lt;code&gt;Shorten&lt;/code&gt; with the URL&lt;/li&gt;
+&lt;li&gt;this function verifies that the URL is valid and sends an error response if it is not&lt;/li&gt;
+&lt;li&gt;or it calls &lt;code&gt;NewResponse&lt;/code&gt; which builds a response, adds an entry in the map, and returns the Response to &lt;code&gt;Shorten&lt;/code&gt;&amp;hellip;&lt;/li&gt;
+&lt;li&gt;which writes the new Response to the DB&amp;hellip;&lt;/li&gt;
+&lt;li&gt;and returns the JSON representation of it to the handler&amp;hellip;&lt;/li&gt;
+&lt;li&gt;which returns it to the user.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;use a proper database, even just SQLite, instead of a flat file&lt;/li&gt;
+&lt;li&gt;use a better hashing function from long URLs to short URLs, and check for collisions&lt;/li&gt;
+&lt;li&gt;do something to better accomodate thread/process scaling, probably running a separate goroutine to issue writes to the DB/map, using channels&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Recurse Center: Accepted</title>
@@ -62,8 +166,8 @@
 &lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://request-headers-go.herokuapp.com/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/fcc/tree/master/request-headers/go&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/headers/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/fcc/tree/master/request-headers/g://github.com/frenata/api-frenata/tree/master/src/headers&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&#34;wherefore-art-thou-x-forwarded-for&#34;&gt;Wherefore art thou X-Forwarded-For?&lt;/h3&gt;
@@ -129,8 +233,8 @@
 &lt;p&gt;Because I like it, that&amp;rsquo;s why! And it&amp;rsquo;s pragmatic but one-way-to-do-it spirit fits my personality. After spending months with Java for school it is an absolute joy to work with. I&amp;rsquo;ll touch on some of the more interesting things I encountered while working on the project. The details are in the source of course, which I worked hard to keep readable and annotated.&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://timestamp-go.herokuapp.com/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/fcc/tree/master/timestamp/go&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/timestamp/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/timestamp&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&#34;heroku&#34;&gt;Heroku&lt;/h3&gt;
@@ -525,16 +629,6 @@ public int update(
 &lt;p&gt;Of course I don&amp;rsquo;t plan on stopping there. The winter school break presents me with a rare opportunity&amp;ndash;the chance to schedule certification tests during the work week without having to worry about who will take care of the baby. To that end, my goal is to further finish the Security+ and Project+ certifications before 9 January. With focus, it should just be possible.&lt;/p&gt;
 
 &lt;p&gt;I started at WGU in March of 2016, all the GenEd credits out of the way and about 95 credits to do in order to finish a bachelor&amp;rsquo;s degree long delayed. 44 remain, and by early January only 33 will remain. My longterm aim is now to finish the entirety of the degree plan by the end of May, marking 15 months and 2 terms of study.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Site</title>
-      <link>http://frenata.me/site/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://frenata.me/site/</guid>
-      <description>&lt;p&gt;The site is built with &lt;a target=&#34;_blank&#34; href=&#34;//gohugo.io&#34;&gt;Hugo&lt;/a&gt;—a static site generator made with Go. It uses the &lt;a target=&#34;_blank&#34; href=&#34;//github.com/IvanChou/hugo-theme-vec&#34;&gt;vec&lt;/a&gt; theme. The posts are written in Markdown.&lt;/p&gt;
 </description>
     </item>
     

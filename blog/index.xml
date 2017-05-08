@@ -6,8 +6,98 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 04 May 2017 14:51:44 +0700</lastBuildDate>
+    <lastBuildDate>Mon, 08 May 2017 20:43:49 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Speedrun: Image Search</title>
+      <link>http://frenata.me/blog/speedrun-images/</link>
+      <pubDate>Mon, 08 May 2017 20:43:49 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/speedrun-images/</guid>
+      <description>
+
+&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/images/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/images&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;my-kingdom-for-an-api-that-works&#34;&gt;My Kingdom for an API (that works!)&lt;/h3&gt;
+
+&lt;p&gt;By far the most complicated thing about this project was finding the right API to work with. Historical reading indicated that Google&amp;rsquo;s Image Search API had once been fairly open, but do they even pretend that their motto is &amp;ldquo;Don&amp;rsquo;t be evil&amp;rdquo; these days?&lt;/p&gt;
+
+&lt;p&gt;Imgur seemed a likely candidate, but unfortunately there seemed to be no easy way to request non-album images, and no easy way to extract a direct link to the image contained &lt;em&gt;in&lt;/em&gt; an album, and therefore no way to build thumbnail links. Drat.&lt;/p&gt;
+
+&lt;p&gt;Eventually I settled on Flickr, and I had to dust off an ancient Yahoo! email address to do so.&lt;/p&gt;
+
+&lt;h3 id=&#34;build-your-own-url&#34;&gt;Build your own URL&lt;/h3&gt;
+
+&lt;p&gt;The most perplexing thing about the Flickr API was that no direct link was provided in the data. Instead, provided are various pieces of data that must be manually pieced together, as their &lt;a href=&#34;https://www.flickr.com/services/api/misc.urls.html&#34;&gt;documentation&lt;/a&gt; explains:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;You can construct the source URL to a photo once you know its ID, server ID, farm ID and secret, as returned by many API methods.
+
+The URL takes the following format:
+
+https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+	or
+https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
+	or
+https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|png)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I&amp;rsquo;m still not sure why they do it this way, but it wasn&amp;rsquo;t too hard to wire everything together from the raw API results.&lt;/p&gt;
+
+&lt;h3 id=&#34;a-series-of-tubes&#34;&gt;A Series of Tubes&lt;/h3&gt;
+
+&lt;p&gt;The verboseness of Go bit me a bit on this one, since although it makes decoding and encoding JSON values relatively easy via &lt;code&gt;struct&lt;/code&gt;s, I needed to work with three separate kinds of data structures: the incoming data from Flickr:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type ImageData struct {
+	Id     string `json:&amp;quot;id&amp;quot;`
+	Secret string `json:&amp;quot;secret&amp;quot;`
+	Server string `json:&amp;quot;server&amp;quot;`
+	Title  string `json:&amp;quot;title&amp;quot;`
+	Farm   int    `json:&amp;quot;farm&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The outgoing response given to &lt;em&gt;my&lt;/em&gt; client:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type ImageResponse struct {
+	Uri       string `json:&amp;quot;uri&amp;quot;`
+	Thumbnail string `json:&amp;quot;thumbnail&amp;quot;`
+	Text      string `json:&amp;quot;text&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And the outgoing response for a &amp;ldquo;latest search&amp;rdquo; request:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Search struct {
+	Term string `json:&amp;quot;term&amp;quot;`
+	When string `json:&amp;quot;when&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Only &lt;code&gt;ImageResponse&lt;/code&gt; truly needed a dedicated constructor, mostly to run through the URL construction hoops, but this got a bit wordy, especially once accomodating the need for array structures and functions to prettily print all of this. The entire thing could do with a decent refactor, since I&amp;rsquo;m fairly sure my &lt;code&gt;String() string&lt;/code&gt; function is exactly the same for each structure.&lt;/p&gt;
+
+&lt;h3 id=&#34;it-s-the-latest-show&#34;&gt;It&amp;rsquo;s the Latest Show!&lt;/h3&gt;
+
+&lt;p&gt;&amp;ldquo;Show the 10 most recent image searches&amp;rdquo; doesn&amp;rsquo;t seem like the kind of user story that really needs true data persistence, so I decided to just hold search history in a simple array that cuts off the oldest entry when it exceeds 10 entries.&lt;/p&gt;
+
+&lt;p&gt;This worked out just fine but is also when Heroku&amp;rsquo;s free tier really bit me too (I sense a pattern), since when Heroku sends the application to sleep, it flushes the memory. Any request sent to the server wakes it, but this effectively means that the search history is limited to the latest session.&lt;/p&gt;
+
+&lt;p&gt;Of course this could be avoided by paying $7/month to run this service non-stop, but I&amp;rsquo;m not there yet.&lt;/p&gt;
+
+&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;some serious refactoring to remove code duplication should/could be done&lt;/li&gt;
+&lt;li&gt;added parameters along with &amp;ldquo;offset&amp;rdquo; would be pretty easy to implement, perhaps one that sets the size of the thumbnail?&lt;/li&gt;
+&lt;li&gt;the original demo had a &amp;ldquo;context&amp;rdquo; field, although it wasn&amp;rsquo;t listed as a user story. Could I return something sensible in this case anyway? The owner of the picture&amp;rsquo;s profile?&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Speedrun: URL Shortener</title>
@@ -167,7 +257,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://api.frenata.net/headers/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/fcc/tree/master/request-headers/g://github.com/frenata/api-frenata/tree/master/src/headers&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/headers&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&#34;wherefore-art-thou-x-forwarded-for&#34;&gt;Wherefore art thou X-Forwarded-For?&lt;/h3&gt;
@@ -615,20 +705,6 @@ public int update(
 &lt;p&gt;And that was more or less all I had time for.&lt;/p&gt;
 
 &lt;p&gt;The language has its oddities (&lt;code&gt;|&amp;gt;&lt;/code&gt;?) but was sharply functional, not tied to the sluggishly starting JVM, and easy to work with. I suspect I will return to it. The Actor model of concurrency is distinctly interesting and had me imagining what it could do in the kind of heavy simulation ala Dwarf Fortress that I&amp;rsquo;ve been interested in pursuing.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>in media res</title>
-      <link>http://frenata.me/blog/in-media-res/</link>
-      <pubDate>Thu, 15 Dec 2016 22:06:40 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/in-media-res/</guid>
-      <description>&lt;p&gt;Less than a month has passed of my second term at &lt;a href=&#34;//wgu.edu&#34;&gt;WGU&lt;/a&gt;, and I&amp;rsquo;m just about done with my enrolled classes for the 6 month term. A couple of database classes are in hand, as is CompTIA&amp;rsquo;s Network+ certification, all that remains officially is a database adminstration class on the hairier parts of SQL.&lt;/p&gt;
-
-&lt;p&gt;Of course I don&amp;rsquo;t plan on stopping there. The winter school break presents me with a rare opportunity&amp;ndash;the chance to schedule certification tests during the work week without having to worry about who will take care of the baby. To that end, my goal is to further finish the Security+ and Project+ certifications before 9 January. With focus, it should just be possible.&lt;/p&gt;
-
-&lt;p&gt;I started at WGU in March of 2016, all the GenEd credits out of the way and about 95 credits to do in order to finish a bachelor&amp;rsquo;s degree long delayed. 44 remain, and by early January only 33 will remain. My longterm aim is now to finish the entirety of the degree plan by the end of May, marking 15 months and 2 terms of study.&lt;/p&gt;
 </description>
     </item>
     

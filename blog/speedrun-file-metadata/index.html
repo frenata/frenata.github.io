@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title> Speedrun: File Metadata Service &middot; Kata Frenata </title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="generator" content="Hugo 0.18-DEV" />
+
+
+<link rel="stylesheet" href="http://frenata.me/css/vec.css">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+<link rel="shortcut icon" href="/favicon.ico">
+
+
+<link href="" rel="alternate" type="application/rss+xml" title="Kata Frenata" />
+
+</head>
+
+<body>
+  <header>
+  <nav>
+    <ul>
+      
+      
+      <li class="pull-left ">
+        <a href="http://frenata.me">/home/frenata</a>
+      </li>
+      
+      
+      <li class="pull-left current">
+        <a href="/blog">~/blog</a>
+      </li>
+      
+      
+      <li class="pull-left ">
+        <a href="/site">~/site</a>
+      </li>
+      
+  
+      <li class="pull-right"><a href=""><i class="fa fa-rss"></i></a></li>
+    </ul>
+  </nav>
+</header>
+
+  <div class="content">
+    
+    
+    <section class="post">
+      <h1 class="post-title"><a href="http://frenata.me/blog/speedrun-file-metadata/">Speedrun: File Metadata Service</a></h1>
+      <span class="post-date">May 9, 2017 </span>
+      <div class="post-content">
+        
+
+<h3 id="fresh-links">Fresh Links</h3>
+
+<ul>
+<li><a href="https://api.frenata.net/files/">Deployed App</a></li>
+<li><a href="https://github.com/frenata/api-frenata/tree/master/src/files">GitHub repo</a></li>
+</ul>
+
+<h3 id="one-step-at-a-time">One Step at a Time</h3>
+
+<p>There several features I needed to implement for this project that I hadn&rsquo;t done previously:</p>
+
+<ul>
+<li>serving actual html, rather than just instruction text or JSON responses</li>
+<li>distinguishing and using both GET and POST methods</li>
+<li>and then of course the core &ldquo;problem&rdquo; of allowing a user to upload a file and figuring out how to extract data from that file.</li>
+</ul>
+
+<p>I thus broke the problem down into small achievable pieces.</p>
+
+<p>First I focused simply on serving html. I defined a file called &ldquo;formfile.gtpl&rdquo;, and after some poking settled on putting it in a new directory in the project root called static. The early version I used looked something like this:</p>
+
+<pre><code>&lt;html&gt;
+	&lt;head&gt;&lt;title&gt;File Metadata Service&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;form action = &quot;/files&quot; method = &quot;POST&quot;&gt;
+			Testing:&lt;input type=&quot;text&quot; name=&quot;test&quot; /&gt;
+			&lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+		&lt;/form&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>Initially my handler simply wrote this file to the page on every request. Done.</p>
+
+<h3 id="the-postman-cometh">The POSTman cometh</h3>
+
+<p>Next I needed to actually handle both GET and POST methods. A <a href="https://astaxie.gitbooks.io/build-web-application-with-golang/en/04.1.html">chapter</a> from a book about building web applications with Go proved useful. A simple <code>if/else</code> checking <code>r.Method</code> was sufficient. For a GET request, I served the html file. For a POST request&hellip; I parsed the form, then echoed the value of my &ldquo;test&rdquo; value: <code>io.WriteString(w, r.Form[&quot;test&quot;][0])</code>.</p>
+
+<p>Nothing happened! Eventually I narrowed this down to a matter of routes: while my default route to this service was /files/, the POST request was trying to request /files. I don&rsquo;t entirely understand the <em>why</em> here, but routing both requests to the files handler proved sufficient to get things working.</p>
+
+<p>I was GETing and POSTing like a PRO.</p>
+
+<h3 id="files-full-of-them">Files Full of &hellip;Them</h3>
+
+<p>I added a file input to my form, simple enough, and turned to the matter of dealing with it in my code. My early research had turned up a promising standard library function call, <a href="https://golang.org/pkg/net/http/#Request.FormFile">FormFile</a>. However after struggling with it for a while I realized that despite the documentation saying that &ldquo;FormFile calls ParseMultipartForm and ParseForm if necessary.&rdquo;, I seemed to need to call <code>ParseMultipartForm</code> myself. Perhaps I missed something.</p>
+
+<p>I dug into the details of the data returned by <code>FormFile</code>. I had immediate access, through the header, to the filename and the file headers, but <em>size</em>, my main goal, wasn&rsquo;t present in those headers. I did start echoing the filename back as a proof of concept. Deep into the documentation: the backing structure <em>might</em> be an <code>*os.File</code> (which I could treat like any ordinary file, and get the size from), but it might not. Bummer. All I really had access to was the interfaces defined on <code>multipart.File</code>:</p>
+
+<pre><code>type File interface {
+	io.Reader
+	io.ReaderAt
+	io.Seeker
+	io.Closer
+}
+</code></pre>
+
+<p>I knew how to use a <code>Reader</code>, so I tried just reading from a file, making a buffer and loading the data into the buffer&hellip;then checking the size. That might have worked, but it didn&rsquo;t feel like the right approach. I didn&rsquo;t care about the actual data, only how much of it there was.</p>
+
+<h3 id="on-the-shoulders-of-giants">On the Shoulders of Giants</h3>
+
+<p>Some googling around the problem turned up a lovely guide to doing <a href="https://medium.com/dtoebe/how-to-get-a-multipart-file-size-in-golang-3ab4ab4c3e3">precisely</a> what I wanted. In short, the author recommended attempting to type switch to <code>os.File</code>, grabbing the size the normal way if that succeeded, and otherwise using the <code>Seek</code> method to find the size. The relevant code looks like this:</p>
+
+<pre><code>var size int64
+switch t := file.(type) {
+case *os.File:
+	stats, _ := t.Stat()
+	size = stats.Size()
+default:
+	bytes, _ := file.Seek(0, 2)
+	size = bytes
+}
+</code></pre>
+
+<p>The somewhat arcane <code>file.Seek(0, 2)</code> means, starting from the beginning, scan through the file until the end, and return the number of bytes passed over. Perfect!</p>
+
+<h3 id="wrap-it-up">Wrap It Up!</h3>
+
+<p>Only a few things remained. Though the user stories don&rsquo;t required it, I added both the filename and the Content-Type to the JSON response. I had immediate access to them anyway through the file header, so why not?</p>
+
+<p>I had also early on accidentally clicked &ldquo;Submit&rdquo; without actually picking a file and crashed the program, so I dealt with it now. It feels like a bit of a kludge, but I simple redirected back to the main route and quit the handler, which will then immediately be fired again. I decided to print no error to the user.</p>
+
+<p>Finally, I added a slightly more helpful message on the main html page.</p>
+
+<h3 id="room-for-improvement">Room for Improvement</h3>
+
+<ul>
+<li>a bit of refactoring love wouldn&rsquo;t hurt</li>
+<li>investigate why /files/ vs /files matters</li>
+<li>what other file metadata could reasonably be extracted?</li>
+<li>there is a memory limit by nature of how <code>ParseMultipartForm</code> works, so reporting some kind of error message (via JSON?) to users who attempt to upload large files is probably a good idea</li>
+</ul>
+
+      </div>
+    </section>
+    
+    <section class="pagination clearfix">
+      
+      <a class="btn previous " href="http://frenata.me/blog/speedrun-images/"> Speedrun: Image Search </a> 
+       
+      
+    </section>
+    
+    
+  </div>
+  
+  <footer>
+  <div class="footer-info">
+    <p>
+      <a href="mailto:andrew@frenata.net?subject="><i class="fa fa-envelope-o"></i> andrew@frenata.net </a>
+      {
+        <a href="https://gohugo.io/" title="Hugo :: A fast and modern static website engine">Hugo 0.18-DEV</a>,
+        <a href="https://github.com/IvanChou/yii.im" title="vec">Vec</a> 
+      }
+      {<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" title="CC BY-NC-ND 3.0">CC BY-NC-ND 3.0</a>}
+    </p>
+  </div>
+</footer>
+  
+  <script src="http://frenata.me/js/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  
+
+</body>
+
+</html>

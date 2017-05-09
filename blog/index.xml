@@ -6,8 +6,111 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 08 May 2017 20:43:49 +0700</lastBuildDate>
+    <lastBuildDate>Tue, 09 May 2017 21:14:14 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Speedrun: File Metadata Service</title>
+      <link>http://frenata.me/blog/speedrun-file-metadata/</link>
+      <pubDate>Tue, 09 May 2017 21:14:14 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/speedrun-file-metadata/</guid>
+      <description>
+
+&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/files/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/files&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;one-step-at-a-time&#34;&gt;One Step at a Time&lt;/h3&gt;
+
+&lt;p&gt;There several features I needed to implement for this project that I hadn&amp;rsquo;t done previously:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;serving actual html, rather than just instruction text or JSON responses&lt;/li&gt;
+&lt;li&gt;distinguishing and using both GET and POST methods&lt;/li&gt;
+&lt;li&gt;and then of course the core &amp;ldquo;problem&amp;rdquo; of allowing a user to upload a file and figuring out how to extract data from that file.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I thus broke the problem down into small achievable pieces.&lt;/p&gt;
+
+&lt;p&gt;First I focused simply on serving html. I defined a file called &amp;ldquo;formfile.gtpl&amp;rdquo;, and after some poking settled on putting it in a new directory in the project root called static. The early version I used looked something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;html&amp;gt;
+	&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;File Metadata Service&amp;lt;/title&amp;gt;
+	&amp;lt;/head&amp;gt;
+	&amp;lt;body&amp;gt;
+		&amp;lt;form action = &amp;quot;/files&amp;quot; method = &amp;quot;POST&amp;quot;&amp;gt;
+			Testing:&amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;quot;test&amp;quot; /&amp;gt;
+			&amp;lt;input type=&amp;quot;submit&amp;quot; value=&amp;quot;Submit&amp;quot; /&amp;gt;
+		&amp;lt;/form&amp;gt;
+	&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Initially my handler simply wrote this file to the page on every request. Done.&lt;/p&gt;
+
+&lt;h3 id=&#34;the-postman-cometh&#34;&gt;The POSTman cometh&lt;/h3&gt;
+
+&lt;p&gt;Next I needed to actually handle both GET and POST methods. A &lt;a href=&#34;https://astaxie.gitbooks.io/build-web-application-with-golang/en/04.1.html&#34;&gt;chapter&lt;/a&gt; from a book about building web applications with Go proved useful. A simple &lt;code&gt;if/else&lt;/code&gt; checking &lt;code&gt;r.Method&lt;/code&gt; was sufficient. For a GET request, I served the html file. For a POST request&amp;hellip; I parsed the form, then echoed the value of my &amp;ldquo;test&amp;rdquo; value: &lt;code&gt;io.WriteString(w, r.Form[&amp;quot;test&amp;quot;][0])&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Nothing happened! Eventually I narrowed this down to a matter of routes: while my default route to this service was /files/, the POST request was trying to request /files. I don&amp;rsquo;t entirely understand the &lt;em&gt;why&lt;/em&gt; here, but routing both requests to the files handler proved sufficient to get things working.&lt;/p&gt;
+
+&lt;p&gt;I was GETing and POSTing like a PRO.&lt;/p&gt;
+
+&lt;h3 id=&#34;files-full-of-them&#34;&gt;Files Full of &amp;hellip;Them&lt;/h3&gt;
+
+&lt;p&gt;I added a file input to my form, simple enough, and turned to the matter of dealing with it in my code. My early research had turned up a promising standard library function call, &lt;a href=&#34;https://golang.org/pkg/net/http/#Request.FormFile&#34;&gt;FormFile&lt;/a&gt;. However after struggling with it for a while I realized that despite the documentation saying that &amp;ldquo;FormFile calls ParseMultipartForm and ParseForm if necessary.&amp;rdquo;, I seemed to need to call &lt;code&gt;ParseMultipartForm&lt;/code&gt; myself. Perhaps I missed something.&lt;/p&gt;
+
+&lt;p&gt;I dug into the details of the data returned by &lt;code&gt;FormFile&lt;/code&gt;. I had immediate access, through the header, to the filename and the file headers, but &lt;em&gt;size&lt;/em&gt;, my main goal, wasn&amp;rsquo;t present in those headers. I did start echoing the filename back as a proof of concept. Deep into the documentation: the backing structure &lt;em&gt;might&lt;/em&gt; be an &lt;code&gt;*os.File&lt;/code&gt; (which I could treat like any ordinary file, and get the size from), but it might not. Bummer. All I really had access to was the interfaces defined on &lt;code&gt;multipart.File&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type File interface {
+	io.Reader
+	io.ReaderAt
+	io.Seeker
+	io.Closer
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I knew how to use a &lt;code&gt;Reader&lt;/code&gt;, so I tried just reading from a file, making a buffer and loading the data into the buffer&amp;hellip;then checking the size. That might have worked, but it didn&amp;rsquo;t feel like the right approach. I didn&amp;rsquo;t care about the actual data, only how much of it there was.&lt;/p&gt;
+
+&lt;h3 id=&#34;on-the-shoulders-of-giants&#34;&gt;On the Shoulders of Giants&lt;/h3&gt;
+
+&lt;p&gt;Some googling around the problem turned up a lovely guide to doing &lt;a href=&#34;https://medium.com/dtoebe/how-to-get-a-multipart-file-size-in-golang-3ab4ab4c3e3&#34;&gt;precisely&lt;/a&gt; what I wanted. In short, the author recommended attempting to type switch to &lt;code&gt;os.File&lt;/code&gt;, grabbing the size the normal way if that succeeded, and otherwise using the &lt;code&gt;Seek&lt;/code&gt; method to find the size. The relevant code looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var size int64
+switch t := file.(type) {
+case *os.File:
+	stats, _ := t.Stat()
+	size = stats.Size()
+default:
+	bytes, _ := file.Seek(0, 2)
+	size = bytes
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The somewhat arcane &lt;code&gt;file.Seek(0, 2)&lt;/code&gt; means, starting from the beginning, scan through the file until the end, and return the number of bytes passed over. Perfect!&lt;/p&gt;
+
+&lt;h3 id=&#34;wrap-it-up&#34;&gt;Wrap It Up!&lt;/h3&gt;
+
+&lt;p&gt;Only a few things remained. Though the user stories don&amp;rsquo;t required it, I added both the filename and the Content-Type to the JSON response. I had immediate access to them anyway through the file header, so why not?&lt;/p&gt;
+
+&lt;p&gt;I had also early on accidentally clicked &amp;ldquo;Submit&amp;rdquo; without actually picking a file and crashed the program, so I dealt with it now. It feels like a bit of a kludge, but I simple redirected back to the main route and quit the handler, which will then immediately be fired again. I decided to print no error to the user.&lt;/p&gt;
+
+&lt;p&gt;Finally, I added a slightly more helpful message on the main html page.&lt;/p&gt;
+
+&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;a bit of refactoring love wouldn&amp;rsquo;t hurt&lt;/li&gt;
+&lt;li&gt;investigate why /files/ vs /files matters&lt;/li&gt;
+&lt;li&gt;what other file metadata could reasonably be extracted?&lt;/li&gt;
+&lt;li&gt;there is a memory limit by nature of how &lt;code&gt;ParseMultipartForm&lt;/code&gt; works, so reporting some kind of error message (via JSON?) to users who attempt to upload large files is probably a good idea&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Speedrun: Image Search</title>
@@ -685,26 +788,6 @@ public int update(
       <description>&lt;p&gt;The goal is to sit and pass CompTIA&amp;rsquo;s Security+ by the end of the week. Scheduling shouldn&amp;rsquo;t be a problem, but I&amp;rsquo;m only halfway through the material an Tuesday morning. I&amp;rsquo;ll need to prove I&amp;rsquo;m ready by the end of Wednesday.&lt;/p&gt;
 
 &lt;p&gt;Away!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>a day with elixir</title>
-      <link>http://frenata.me/blog/a-day-with-elixir/</link>
-      <pubDate>Sun, 18 Dec 2016 22:42:47 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/a-day-with-elixir/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;ve pushed hard at schoolwork for the past two weeks, and a day of Rest presented itself. No new studies, no reviews, no school.&lt;/p&gt;
-
-&lt;p&gt;But what to do?&lt;/p&gt;
-
-&lt;p&gt;Polyglot that I am, the day&amp;rsquo;s learning was set aside to learn a new language: &lt;a href=&#34;//elixir-lang.org/&#34;&gt;Elixir&lt;/a&gt;. I&amp;rsquo;ve played with some functional languages previously, notably Clojure and Rust, but neither truly caught my heart. Elixir has frequently popped up in comparison to one of my current favorites, Go, which has a &lt;em&gt;somewhat&lt;/em&gt; similar concurrency philosophy.&lt;/p&gt;
-
-&lt;p&gt;Installing it was simple, &lt;code&gt;pacman -S elixir&lt;/code&gt; handling everything that was needed. Before launching into exercises directly I read through the official getting started guide, then looked around for a style guide along the lines of &lt;code&gt;gofmt&lt;/code&gt; or &lt;code&gt;autopep8&lt;/code&gt;. Nothing exactly right was there, but the lovely &lt;a href=&#34;http://elixirkoans.io/&#34;&gt;Elixir Koans&lt;/a&gt; kept me thrumming back and forth in the guts of the language&amp;rsquo;s syntax. Setting Vim up to auto-save made this particularly pleasurable. Afterwards I &lt;a href=&#34;http://exercism.io/submissions/c1513aa32b674e7183930bd1d178e991&#34;&gt;exercised&lt;/a&gt; and tried to think/write/code in the proper paradigm.&lt;/p&gt;
-
-&lt;p&gt;And that was more or less all I had time for.&lt;/p&gt;
-
-&lt;p&gt;The language has its oddities (&lt;code&gt;|&amp;gt;&lt;/code&gt;?) but was sharply functional, not tied to the sluggishly starting JVM, and easy to work with. I suspect I will return to it. The Actor model of concurrency is distinctly interesting and had me imagining what it could do in the kind of heavy simulation ala Dwarf Fortress that I&amp;rsquo;ve been interested in pursuing.&lt;/p&gt;
 </description>
     </item>
     

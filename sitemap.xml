@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://frenata.me/blog/speedrun-file-metadata/</loc>
+    <lastmod>2017-05-09T21:14:14+07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://frenata.me/blog/speedrun-images/</loc>
     <lastmod>2017-05-08T20:43:49+07:00</lastmod>
   </url>
@@ -83,13 +88,13 @@
   
   <url>
     <loc>http://frenata.me/blog/</loc>
-    <lastmod>2017-05-08T20:43:49+07:00</lastmod>
+    <lastmod>2017-05-09T21:14:14+07:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://frenata.me/</loc>
-    <lastmod>2017-05-08T20:43:49+07:00</lastmod>
+    <lastmod>2017-05-09T21:14:14+07:00</lastmod>
     <priority>0</priority>
   </url>
   

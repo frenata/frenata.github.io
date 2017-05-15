@@ -6,8 +6,88 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 09 May 2017 21:14:14 +0700</lastBuildDate>
+    <lastBuildDate>Mon, 15 May 2017 10:50:36 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Keeping a Weekly Schedule</title>
+      <link>http://frenata.me/blog/schedule/</link>
+      <pubDate>Mon, 15 May 2017 10:50:36 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/schedule/</guid>
+      <description>
+
+&lt;p&gt;Since finishing up at WGU, I&amp;rsquo;ve felt myself floundering for lack of structure. I was getting stuff done&amp;hellip;but it was a little bit of that, a little bit of this, ooh that looks interesting, squirrel!&lt;/p&gt;
+
+&lt;p&gt;I knew I needed some added structure to shape and guide my learning, but what?&lt;/p&gt;
+
+&lt;p&gt;This became even more relevant once I landed a couple of freelancing jobs. Huge portions of my days are spent caring for an infant, so I can&amp;rsquo;t afford to &lt;em&gt;not&lt;/em&gt; be productive when I have the chance. I still wanted to keep pushing myself to learn, and I mananged to narrow down the domains I would spend my time with to two: functional programming and security. Plus maths. Knowing that maths will pay off in pretty much every aspect of software/CS that I later delve into, I wanted to refresh my math.&lt;/p&gt;
+
+&lt;p&gt;Still, simply resolving what to focus on felt insufficient. On any given day I was simply going with sounded good that day, which meant I might spend a few days on a subject, but let another subject lie dormant. A subject a day&amp;hellip;keeps the teacher away?&lt;/p&gt;
+
+&lt;h3 id=&#34;the-schedule&#34;&gt;The Schedule&lt;/h3&gt;
+
+&lt;p&gt;Reflection Sunday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;a day for writing and thinking about my learning, and meta-cognition in general&lt;/li&gt;
+&lt;li&gt;also humanities reading&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Math Monday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;keeping a heavy focus on &amp;ldquo;pure&amp;rdquo; math, in whatever forms&lt;/li&gt;
+&lt;li&gt;currently: refreshing Calculus via &lt;a href=&#34;https://www.coursera.org/learn/calculus1&#34;&gt;tOSU&amp;rsquo;s excellent MOOC @Coursera&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;future: Calculus 2, linear algebra, predicate calculus&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Work Tuesday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;focus on projects and gigs&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Crypto Wednesday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;focus on security issues, either InfoSec broadly or AppSec&lt;/li&gt;
+&lt;li&gt;includes penetration testing exercises and games&lt;/li&gt;
+&lt;li&gt;currently: &lt;a href=&#34;https://www.coursera.org/learn/crypto/&#34;&gt;Cryptography 1&lt;/a&gt; and &lt;a href=&#34;http://cryptopals.com&#34;&gt;CryptoPals&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;future: various other wargames and CTFs&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Work Thursday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;see Tuesday&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Functional Friday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;focus on functional programming in all aspects, this is in many ways applied math of course
+
+&lt;ul&gt;
+&lt;li&gt;currently: learning Elm &lt;a href=&#34;https://guide.elm-lang.org&#34;&gt;official guide&lt;/a&gt; and &lt;a href=&#34;https://www.elm-tutorial.org/en/&#34;&gt;web app tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;future: Elixir, Haskell, Clojure&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Wildcard Saturday&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;a day to do the things that don&amp;rsquo;t fit anywhere else&lt;/li&gt;
+&lt;li&gt;ideally by keeping this a dedicated day, I won&amp;rsquo;t get distracted by something shiny and can instead say &amp;ldquo;I&amp;rsquo;ll play with it on Saturday&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;in-practice&#34;&gt;In Practice&lt;/h3&gt;
+
+&lt;p&gt;I may not keep to this 100% of the time but I&amp;rsquo;m hoping to be fairly strict. Additionally, the educational focus on any given day may only be an hour or two, depending on my need to focus on various projects and take care of the baby.&lt;/p&gt;
+
+&lt;p&gt;On the advice of my own personal Master of Education, I&amp;rsquo;ll also try to sprinkle in some short math exercises throughout the week to better retain the math I learn. Perhaps via Khan Academy?&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Speedrun: File Metadata Service</title>
@@ -776,18 +856,6 @@ public int update(
 &lt;/ul&gt;
 
 &lt;p&gt;Blogging is sadly not yet part of my daily or weekly workflow, though perhaps it should be. I&amp;rsquo;m getting there, and hope to write more about all of the above.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>the rabbit</title>
-      <link>http://frenata.me/blog/the-rabbit/</link>
-      <pubDate>Tue, 20 Dec 2016 11:10:31 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/the-rabbit/</guid>
-      <description>&lt;p&gt;The goal is to sit and pass CompTIA&amp;rsquo;s Security+ by the end of the week. Scheduling shouldn&amp;rsquo;t be a problem, but I&amp;rsquo;m only halfway through the material an Tuesday morning. I&amp;rsquo;ll need to prove I&amp;rsquo;m ready by the end of Wednesday.&lt;/p&gt;
-
-&lt;p&gt;Away!&lt;/p&gt;
 </description>
     </item>
     

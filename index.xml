@@ -6,8 +6,28 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 May 2017 10:50:36 +0700</lastBuildDate>
+    <lastBuildDate>Sun, 21 May 2017 12:52:18 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Running a 5K: Goals</title>
+      <link>http://frenata.me/blog/running-goals/</link>
+      <pubDate>Sun, 21 May 2017 12:52:18 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/running-goals/</guid>
+      <description>&lt;p&gt;I decided this week to stop haphazardly trying to get more physically fit but instead shoot for a concrete goal: running a 5K.&lt;/p&gt;
+
+&lt;p&gt;Physical exercise can&amp;rsquo;t be that different than mental exercise right? Having a goal and pushing towards it means miles better productivity when it comes to coding or computers. It seems logical the same must be true in other aspects of life.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;m following a &lt;a href=&#34;https://www.verywell.com/how-to-train-to-run-your-first-5k-2911619&#34;&gt;guide&lt;/a&gt; and have a goal race pace in mind: 30 minutes. That isn&amp;rsquo;t particularly fast for my gender/age, but a little reaserch indicated that the 28-32 minute range was &amp;ldquo;acceptable&amp;rdquo; for a first timer. It&amp;rsquo;s a 10 kph pace, something I (against all odds!) mananged to keep up this week for 1.6 km.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;ve never &lt;em&gt;loved&lt;/em&gt; running as much as some, but it&amp;rsquo;s easy to set solid goals with running, and I actually did run the mile in 7th/8th grade.&lt;/p&gt;
+
+&lt;p&gt;And maybe with a goal in mind, rather than just &amp;ldquo;you should run&amp;rdquo;, I actually will enjoy it!&lt;/p&gt;
+
+&lt;p&gt;Looking around locally, my best bet for an actual race might be &lt;a href=&#34;http://www.balisummerbeachrun.com/&#34;&gt;Bali&lt;/a&gt; in August. But on a more casual level I can run a &amp;ldquo;race&amp;rdquo; at a park sooner than that.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Keeping a Weekly Schedule</title>
@@ -826,36 +846,6 @@ public int update(
 &lt;p&gt;Too much theory on a bunch of interlocking systems is confusing, so my next task is to follow the &lt;a href=&#34;https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html&#34;&gt;documentation&lt;/a&gt;, test some simpler use cases, then work back on my desired project.&lt;/p&gt;
 
 &lt;p&gt;I anticipate this will be my WGU capstone, so I&amp;rsquo;ll be working up lots of documentation along the way.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Hustle</title>
-      <link>http://frenata.me/blog/Hustle/</link>
-      <pubDate>Mon, 23 Jan 2017 12:08:06 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/Hustle/</guid>
-      <description>&lt;p&gt;After spending what seemed like the entire month of December and about half of January doing nothing but schoolwork, life is calming down. Between me and graduation are only 3 things:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;the OCP certification test&lt;/li&gt;
-&lt;li&gt;a prescribed Android app project&lt;/li&gt;
-&lt;li&gt;my capstone, essentially this is a senior thesis that will need to heavily emphasize the SDLC&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;I have plenty of time. So much so that in addition to planning to buck for a capstone excellence award, I have time and energy to devote to other things.&lt;/p&gt;
-
-&lt;p&gt;Beyond raising the sweet baby Reuel I mean.&lt;/p&gt;
-
-&lt;p&gt;Where am I allocating this excess of energy? After all, one can&amp;rsquo;t study for the OCP all day every day.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;I&amp;rsquo;ve gone back to doing some FCC exercises, and hanging out in their gitter. My knowledge of JS, espespecially the advanced frameworks, is pretty sparse and although I don&amp;rsquo;t exactly want to develop React apps for a living, I figure it can only make me more well rounded.&lt;/li&gt;
-&lt;li&gt;In contrast, the little time I&amp;rsquo;ve spent learning the basics of infosec/pentesting is so much more deligtful, if less directly applicable to career advancement.&lt;/li&gt;
-&lt;li&gt;Which brings up the major way I&amp;rsquo;ve spent time, in job/interview prep of one variety or another. At a minmum I need to beat my resume into something workable, highlighting as much as possible what experince I do have.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Blogging is sadly not yet part of my daily or weekly workflow, though perhaps it should be. I&amp;rsquo;m getting there, and hope to write more about all of the above.&lt;/p&gt;
 </description>
     </item>
     

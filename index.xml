@@ -6,8 +6,83 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 21 May 2017 12:52:18 +0700</lastBuildDate>
+    <lastBuildDate>Sun, 11 Jun 2017 15:03:12 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Freelance 101</title>
+      <link>http://frenata.me/blog/freelance101/</link>
+      <pubDate>Sun, 11 Jun 2017 15:03:12 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/freelance101/</guid>
+      <description>
+
+&lt;h2 id=&#34;or-how-i-started-getting-paid-to-code&#34;&gt;or, how I started getting paid to code&lt;/h2&gt;
+
+&lt;p&gt;First, a disclaimer: I make no claims to teach anyone how to Freelance successfully, despite the title. This merely chronicles my first steps into freelancing, from zero to&amp;hellip; more than zero?&lt;/p&gt;
+
+&lt;h3 id=&#34;0-so-i-wanna-be-a-freelancer&#34;&gt;0: So I wanna be a freelancer!?&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s an awkward time career-wise for me. I&amp;rsquo;ve secured some useful &amp;ldquo;credentials&amp;rdquo; and I do have some track record of employment, but not that many projects to show off to a future employer. Worse is the question of time and timing: I&amp;rsquo;m the primary caregiver of my 1 year old son, which limits how much time I can commit. No 9-5s for me. Even a remote/distributed job is tricky, since I&amp;rsquo;ll be spending 3 months working on my craft later at RC later this year.&lt;/p&gt;
+
+&lt;p&gt;Into that picture stepped contract work, and I decided to pursue the freelance opportunities for the next several months and see where it leads. Ideally this will end with extra spending money and some shiny projects to talk about.&lt;/p&gt;
+
+&lt;h3 id=&#34;1-the-bear-necessities&#34;&gt;1: The bear necessities&amp;hellip;&lt;/h3&gt;
+
+&lt;p&gt;Since I wasn&amp;rsquo;t especially interested in doing a big self-marketing push, I elected to use a freelancing platform. Upwork was often mentioned, so I whipped up a quick profile there, claiming to be a &amp;ldquo;Golang and Java Developer&amp;rdquo;, with a sentence or two describing my interests.&lt;/p&gt;
+
+&lt;p&gt;That was about it; it was woefully insufficient. Somehow within 6 hours of creating a profile I was invited to apply to a job, in what I can only assume was a very silly client just spamming invites. (That job still hasn&amp;rsquo;t hired weeks later.)&lt;/p&gt;
+
+&lt;h3 id=&#34;10-getting-my-first-job&#34;&gt;10: Getting my first job&lt;/h3&gt;
+
+&lt;p&gt;When it became apparent that the initial invite was vapor, I started to take it seriously, and did a little reading on strategies for bidding on jobs. A few of the principles I&amp;rsquo;ve tried to follow:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;be picky about what jobs you apply to (no shotgunning!)&lt;/li&gt;
+&lt;li&gt;use whatever info is given in the initial posting to do preliminary research on what work will be necessary&lt;/li&gt;
+&lt;li&gt;&amp;hellip;and ask solid questions about the job based on that research&lt;/li&gt;
+&lt;li&gt;craft each proposal to each client&lt;/li&gt;
+&lt;li&gt;only apply to jobs you know you can accomplish&lt;/li&gt;
+&lt;li&gt;don&amp;rsquo;t undersell your skills&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;With a still-skimpy profile, I probably had little reason to actually be chosen for any work, but somehow I landed a bid for a fixed price job that I thought I could finish within enough time to maintain a nice hourly rate. My proposal was friendly and well-researched though, and I suppose that must count for something.&lt;/p&gt;
+
+&lt;h3 id=&#34;11-doing-the-work-the-fun-part&#34;&gt;11: Doing the work (the fun part!)&lt;/h3&gt;
+
+&lt;p&gt;Amazingly, the job I landed was to extend an existing open source library, and the client confirmed that it would be perfectly fine to fork, write the code, and submit a pull request.&lt;/p&gt;
+
+&lt;p&gt;Other clients have insisted on full ownership of the code: so while I could talk about the project, the code wouldn&amp;rsquo;t belong to me anymore. I consider myself wildly fortunate to start with this ideal circumstance.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://github.com/codeclimate/test-reporter/pull/133&#34;&gt;work&lt;/a&gt; involved parsing code coverage files, processing them, and outputting the data into a unified format. I learned a dash of Swift for the project, the nominal format, and later expanded the formatter I wrote to any program using &lt;code&gt;gcov&lt;/code&gt; to generate coverage files.&lt;/p&gt;
+
+&lt;p&gt;Perhaps the most interesting/educational part of the work was building a &lt;a href=&#34;https://github.com/frenata/test-reporter/blob/swiftcov_formatter/examples/gcov/Dockerfile&#34;&gt;Dockerfile&lt;/a&gt; to &amp;ldquo;demo&amp;rdquo; my work. I&amp;rsquo;d used Docker before, but mostly I&amp;rsquo;d worked with existing images to simply the dev environment, rather than writing my own containers.&lt;/p&gt;
+
+&lt;p&gt;A sample of the Dockerfile process, follows, demoing the process of using &lt;code&gt;gcc&lt;/code&gt; and &lt;code&gt;gcov&lt;/code&gt; to actually generate a coverage file from a simple C program.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# run gcov on example file
+WORKDIR $CCTR/formatters/gcov/examples
+RUN rm *.gcov
+RUN gcc -fprofile-arcs -ftest-coverage *.c
+RUN ./a.out
+RUN gcov *.c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;100-a-better-profile-aka-virtuous-bragging&#34;&gt;100: A better profile (aka virtuous bragging)&lt;/h3&gt;
+
+&lt;p&gt;I finished the job in less than a week, ahead of schedule, but ended up waiting quite a while for the client to verify the work. I&amp;rsquo;m sure I was a relatively low priority for a fast moving company.&lt;/p&gt;
+
+&lt;p&gt;In the meantime, confident that I could indeed get paid to do this, I turned back to my woeful &lt;a href=&#34;https://www.upwork.com/freelancers/~013c78855eb142b6b7?viewMode=1&#34;&gt;profile&lt;/a&gt;. I wrote up reports on the project I&amp;rsquo;d completed, my senior thesis project, and the FCC/p1xt &amp;ldquo;Speedrun&amp;rdquo; collection of microservices.&lt;/p&gt;
+
+&lt;p&gt;I added some more certifications that I&amp;rsquo;ve earned and took a few &amp;ldquo;skills tests&amp;rdquo;. I&amp;rsquo;m quite skeptical that clients look at any of this, but it might matter to some!&lt;/p&gt;
+
+&lt;p&gt;Most importantly, I rewrote my main blurb, focusing on concrete things that I can produce and professional values rather than abstract skills. Of course, it&amp;rsquo;s still hard to say if any of this is effective, but I&amp;rsquo;ve been involved in a few conversations about jobs lately, and the number of times my profile has been &lt;em&gt;discovered&lt;/em&gt; has been increasing.&lt;/p&gt;
+
+&lt;h3 id=&#34;101-keeping-calm&#34;&gt;101: Keeping calm&lt;/h3&gt;
+
+&lt;p&gt;I&amp;rsquo;m applying for more jobs these days, but still only about 12 total since beginning this journey. 4 of those have resulted in serious discussions with the client about the work. I&amp;rsquo;m still not sure what clients expect, but I&amp;rsquo;m feeling much better about my ability to get paid to do this kind of work.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Running a 5K: Goals</title>
@@ -830,22 +905,6 @@ public int update(
 &lt;p&gt;I spent that first night curled up with Google, trying to identify how better to engage in the later days of the conference. The clear answer shining through: people matter more than technical talks, so go talk to them! I did my best and connected with a well know personality who lived in the same city as me.&lt;/p&gt;
 
 &lt;p&gt;But believe it or not, walking up to strangers, introducing myself, and engaging in conversation is not a strength of mine. A shocking admission from a lifelong nerd, I know. I resolved to &lt;a href=&#34;../FOSS-ASIA-2017&#34;&gt;be better&lt;/a&gt;.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>elastic</title>
-      <link>http://frenata.me/blog/elastic/</link>
-      <pubDate>Sat, 04 Feb 2017 15:41:19 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/elastic/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;m diving into learning the Elastic stack: Logstash, Elasticsearch, Kibana. My aim is to use it to enable the local school here to extract useful information from the reams of lesson plan .docs they have laying around. Useless data right now.&lt;/p&gt;
-
-&lt;p&gt;There&amp;rsquo;s &lt;em&gt;a bunch&lt;/em&gt; going on, and the actual process I&amp;rsquo;ll need to follow to ETL the data I do have into a usuable state isn&amp;rsquo;t entirely clear to me yet. I know I can just throw it into elastic and get full text search, but the data is semi-structured already, so I&amp;rsquo;d like to be able to extract ESLRs, times, teacher names into fields outright.&lt;/p&gt;
-
-&lt;p&gt;Too much theory on a bunch of interlocking systems is confusing, so my next task is to follow the &lt;a href=&#34;https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html&#34;&gt;documentation&lt;/a&gt;, test some simpler use cases, then work back on my desired project.&lt;/p&gt;
-
-&lt;p&gt;I anticipate this will be my WGU capstone, so I&amp;rsquo;ll be working up lots of documentation along the way.&lt;/p&gt;
 </description>
     </item>
     

@@ -56,7 +56,7 @@
 
 &lt;p&gt;The &lt;a href=&#34;https://github.com/codeclimate/test-reporter/pull/133&#34;&gt;work&lt;/a&gt; involved parsing code coverage files, processing them, and outputting the data into a unified format. I learned a dash of Swift for the project, the nominal format, and later expanded the formatter I wrote to any program using &lt;code&gt;gcov&lt;/code&gt; to generate coverage files.&lt;/p&gt;
 
-&lt;p&gt;Perhaps the most interesting/educational part of the work was building a &lt;a href=&#34;https://github.com/frenata/test-reporter/blob/swiftcov_formatter/examples/gcov/Dockerfile&#34;&gt;Dockerfile&lt;/a&gt; to &amp;ldquo;demo&amp;rdquo; my work. I&amp;rsquo;d used Docker before, but mostly I&amp;rsquo;d worked with existing images to simply the dev environment, rather than writing my own containers.&lt;/p&gt;
+&lt;p&gt;Perhaps the most interesting/educational part of the work was building a &lt;a href=&#34;https://github.com/frenata/test-reporter/blob/swiftcov_formatter/examples/gcov/Dockerfile&#34;&gt;Dockerfile&lt;/a&gt; to &amp;ldquo;demo&amp;rdquo; my work. I&amp;rsquo;d used Docker before, but mostly I&amp;rsquo;d worked with existing images to simplify the dev environment, rather than writing my own containers.&lt;/p&gt;
 
 &lt;p&gt;A sample of the Dockerfile process, follows, demoing the process of using &lt;code&gt;gcc&lt;/code&gt; and &lt;code&gt;gcov&lt;/code&gt; to actually generate a coverage file from a simple C program.&lt;/p&gt;
 

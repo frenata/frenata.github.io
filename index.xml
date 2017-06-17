@@ -6,8 +6,104 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 11 Jun 2017 15:03:12 +0700</lastBuildDate>
+    <lastBuildDate>Sat, 17 Jun 2017 14:38:15 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Andrew Nichols : Software Engineer</title>
+      <link>http://frenata.me/cv/</link>
+      <pubDate>Sat, 17 Jun 2017 14:38:15 +0700</pubDate>
+      
+      <guid>http://frenata.me/cv/</guid>
+      <description>
+
+&lt;h3 id=&#34;projects&#34;&gt;Projects&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;PLC program to automate control valve position, allowing client to eliminate manual inspection and tuning.&lt;/li&gt;
+&lt;li&gt;Simulation tool to allow GameMasters to more accurately judge expected deadliness of prepared combat encounters.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/wordbeat&#34;&gt;Application&lt;/a&gt; and &lt;a href=&#34;https://github.com/frenata/thesis&#34;&gt;report&lt;/a&gt; that searches and analyzes digitized lesson plans, helping school to verify learning goals. App accomplishes in minutes what previously took administrators hours to do by hand.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/gomua&#34;&gt;CLI utility&lt;/a&gt; in Go to send/recieve/index mail. Remote hackathon project.&lt;/li&gt;
+&lt;li&gt;Collection of microservices, &lt;a href=&#34;https://github.com/frenata/api-frenata&#34;&gt;written&lt;/a&gt; in Go and &lt;a href=&#34;https://api.frenata.net/&#34;&gt;running&lt;/a&gt; on Heroku.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;work-experience&#34;&gt;Work Experience&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Self-employed : freelance software engineer : &lt;em&gt;current&lt;/em&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/codeclimate/test-reporter/pull/133&#34;&gt;Expanded&lt;/a&gt; parseable formats for a code coverage tool.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Thunderco : May 2008 - October 2013 : PLC programmer, CAD/CAM designer
+
+&lt;ul&gt;
+&lt;li&gt;Implemented custom PLC software to manage control valves.&lt;/li&gt;
+&lt;li&gt;Designed, programmed, and machined standardized and custom built industrial parts for oil pipeline control packages&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;other-experience&#34;&gt;Other Experience&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;FOSSASIA 2017 : March 2017 : volunteer
+
+&lt;ul&gt;
+&lt;li&gt;WiFi deployment; moderator for DevOps track&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Ipeka IICS : October 2014 - June 2016 : volunteer teacher
+
+&lt;ul&gt;
+&lt;li&gt;Trained and tutored kids in basic programming concepts using C++&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;TechKnowHow : 2002-2003 : summer instructor
+
+&lt;ul&gt;
+&lt;li&gt;Trained elementary and junior high kids in the use of game programming and lego robotics.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;education&#34;&gt;Education&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Recurse Center : September - December 2017&lt;/li&gt;
+&lt;li&gt;Coursera : May 2017 - &lt;em&gt;present&lt;/em&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Calculus, Cryptography&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;WGU : BS Software Development : May 2017
+
+&lt;ul&gt;
+&lt;li&gt;Organized student programming collaboration on GitHub&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;languages&#34;&gt;Languages&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Professional&lt;/em&gt;: Go, Java&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Proficient&lt;/em&gt;: Elm, JavaScript, Python&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;other-proficiencies-and-certifications&#34;&gt;Other Proficiencies and Certifications&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;SQL, Git, Elasticsearch, Docker, G-code&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;CompTIA&lt;/em&gt;: A+, Network+, Security+, Project+&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Oracle&lt;/em&gt;: OCA/OCP Java Programmer&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;links&#34;&gt;Links&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/frenata&#34;&gt;Github&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://frenata.me/blog/&#34;&gt;Technical Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkedin.com/in/dandrewnichols&#34;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;mailto:andrew@frenata.net&#34;&gt;Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Freelance 101</title>
@@ -889,22 +985,6 @@ public int update(
 &lt;/ul&gt;
 
 &lt;p&gt;But what &lt;a href=&#34;../Lessons-Learned&#34;&gt;did I learn&lt;/a&gt;?&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>My First Conference</title>
-      <link>http://frenata.me/blog/My-First-Conference/</link>
-      <pubDate>Fri, 24 Mar 2017 14:56:34 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/My-First-Conference/</guid>
-      <description>&lt;p&gt;Last August, at the first technical conference in my rebirthed career as a developer, I spent the entirety of the first day rushing about from session to session, taking notes about interesting ideas and spending most of the elaborate luncheon thinking about which talks I would listen to later that day. But while the tidbits of insight I gained were no doubt highly entertaining at the time, the only thing I can clearly recall 7 months later was a discussion of how Hollywood adapted its view of Computer Security over time.&lt;/p&gt;
-
-&lt;p&gt;Since that talk and my listing of films got me watching &lt;em&gt;Tron&lt;/em&gt; and &lt;em&gt;Space Camp&lt;/em&gt; for the first time I can&amp;rsquo;t entirely complain, but something was missing.&lt;/p&gt;
-
-&lt;p&gt;I spent that first night curled up with Google, trying to identify how better to engage in the later days of the conference. The clear answer shining through: people matter more than technical talks, so go talk to them! I did my best and connected with a well know personality who lived in the same city as me.&lt;/p&gt;
-
-&lt;p&gt;But believe it or not, walking up to strangers, introducing myself, and engaging in conversation is not a strength of mine. A shocking admission from a lifelong nerd, I know. I resolved to &lt;a href=&#34;../FOSS-ASIA-2017&#34;&gt;be better&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
     

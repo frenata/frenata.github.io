@@ -6,8 +6,94 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 11 Jun 2017 15:03:12 +0700</lastBuildDate>
+    <lastBuildDate>Sat, 09 Sep 2017 11:44:33 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Saving a partial Elm Model to LocalStorage</title>
+      <link>http://frenata.me/blog/elm-localstorage/</link>
+      <pubDate>Sat, 09 Sep 2017 11:44:33 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/elm-localstorage/</guid>
+      <description>
+
+&lt;h3 id=&#34;pollution&#34;&gt;Pollution&lt;/h3&gt;
+
+&lt;p&gt;I was nearly finished building a relatively simple webapp to &lt;a href=&#34;http://stocksim.frenata.net/&#34;&gt;simulate stock trading&lt;/a&gt;, when a problem I had set aside from the beginning of the work came looming back: storing the data.&lt;/p&gt;
+
+&lt;p&gt;The app gives you some money to play with and allows you to buy and sell stocks, but the portfolio data was purely ephemeral, vanishing with a refreshed page. That doesn&amp;rsquo;t make much sense for a simulation that would most likely be used over a number of days.&lt;/p&gt;
+
+&lt;p&gt;But I had set the issue aside in favor of building out the actual features, knowing that eventually I would have to get my hands dirty in the world of Elm &amp;ldquo;ports&amp;rdquo;, a feature that allows non-functional JS code to interop with the clean and pure Elm code.&lt;/p&gt;
+
+&lt;h3 id=&#34;copypasta&#34;&gt;Copypasta&lt;/h3&gt;
+
+&lt;p&gt;A little &lt;a href=&#34;http://lmgtfy.com/?q=elm+localstorage&#34;&gt;research&lt;/a&gt; turned up some useful information, including a lovely tutorial on building Elm apps that included detailed instructions on how to setup ports for localStorage.&lt;/p&gt;
+
+&lt;p&gt;Hurrah!&lt;/p&gt;
+
+&lt;p&gt;There wasn&amp;rsquo;t much to implement, and it mostly made sense.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;a few extra lines of JS in my index.html, to
+
+&lt;ul&gt;
+&lt;li&gt;initialize the Elm app with the stored model&lt;/li&gt;
+&lt;li&gt;save the model to storage&lt;/li&gt;
+&lt;li&gt;remove the model from storage&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;some &lt;code&gt;port&lt;/code&gt; declarations in Elm&lt;/li&gt;
+&lt;li&gt;a helper function with this type: &lt;code&gt;Model -&amp;gt; ( Model, Cmd Msg )&lt;/code&gt; that needed to be inserted into the &lt;code&gt;update&lt;/code&gt; function, capturing certain model updates to create the side effect of the JS interop&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The last one was the weirdest to wrap my head around, but the entire effort was promisingly easy.&lt;/p&gt;
+
+&lt;h3 id=&#34;friendship-is-magic&#34;&gt;Friendship is Magic&lt;/h3&gt;
+
+&lt;p&gt;As is typical of making changes to an Elm program, compiling resulted in a friendly error message.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Port `setStorage` is trying to communicate an unsupported type.
+
+352| port setStorage : Model -&amp;gt; Cmd msg
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The specific unsupported type is:
+
+	Dict.Dict String { name : String, shares : Int, price : Float }
+
+The types of values that can flow through in and out of Elm include:
+
+	Ints, Floats, Bools, Strings, Maybes, Lists, Arrays, Tuples, Json.Values,
+	and concrete records.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This was a problem. My data model did use a &lt;code&gt;Dict&lt;/code&gt; to store stock positions in a user&amp;rsquo;s portfolio, but apparently Elm wasn&amp;rsquo;t having that.&lt;/p&gt;
+
+&lt;p&gt;I poked around to see if I could modify the code I&amp;rsquo;d only half-understood to send/recieve something other than the whole model. The good news: yes. The bad news: the data I actually cared about storing was that &lt;code&gt;Dict&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;life-finds-a-way&#34;&gt;Life Finds a Way&lt;/h3&gt;
+
+&lt;p&gt;After a few half starts and many more friendly error messages, I started to put together a solution. The &lt;code&gt;Dict&lt;/code&gt; library helpfully included the pair of functions &lt;code&gt;toList&lt;/code&gt; and &lt;code&gt;fromList&lt;/code&gt;, which according to the compiler &lt;em&gt;were&lt;/em&gt; eligible for sending via ports.&lt;/p&gt;
+
+&lt;p&gt;On examination, the only data that needed to be kept was the cash balance and the list of positions, so the concrete data type that ended up being sent/recieved was:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;(Float, List (String, Position))&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Position is a concrete record type with a couple of pieces of relevant data. Probably there&amp;rsquo;s still some useful refactoring to be done here by aliasing the above tuple to a named type, since it shows up in several places.&lt;/p&gt;
+
+&lt;h3 id=&#34;failure-is-victory&#34;&gt;Failure is Victory&lt;/h3&gt;
+
+&lt;p&gt;Only a smattering more work remained after this insight. My &lt;code&gt;init&lt;/code&gt; function needed to rebuild the floating balance and the dictionary, leaving it with this ugly type signature:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;init : Maybe ( Float, List ( String, Position ) ) -&amp;gt; ( Model, Cmd Msg )&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s all I can do to &lt;em&gt;not&lt;/em&gt; go create a SavedPortfolio type alias right now.&lt;/p&gt;
+
+&lt;p&gt;I also updated the JS to provide a better key name to the saved data: &amp;ldquo;portfolio&amp;rdquo; rather than &amp;ldquo;model&amp;rdquo;. That led me on a crazy bughunt that only ended when I realized I had changed the key value only in the function calls to save and remove&amp;hellip; but not to initialize the Elm app. Put that in the &amp;ldquo;literals should be defined as constants&amp;rdquo; file.&lt;/p&gt;
+
+&lt;p&gt;The actual code for stock trading is not very interesting, but delving into using localStorage and ports ended up forcing me to learn a bunch. I consider myself fortunate that my use case was &lt;em&gt;just&lt;/em&gt; different enough from the tutorial code as to not work at all. If my model had been &amp;ldquo;sendable&amp;rdquo; in the first place, the code would have worked, I would have been satisfied, but I would have walked away without much actual knowledge of &lt;em&gt;how&lt;/em&gt; it worked.&lt;/p&gt;
+
+&lt;p&gt;tl;dr: Failing is learning.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Freelance 101</title>
@@ -889,22 +975,6 @@ public int update(
 &lt;/ul&gt;
 
 &lt;p&gt;But what &lt;a href=&#34;../Lessons-Learned&#34;&gt;did I learn&lt;/a&gt;?&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>My First Conference</title>
-      <link>http://frenata.me/blog/My-First-Conference/</link>
-      <pubDate>Fri, 24 Mar 2017 14:56:34 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/My-First-Conference/</guid>
-      <description>&lt;p&gt;Last August, at the first technical conference in my rebirthed career as a developer, I spent the entirety of the first day rushing about from session to session, taking notes about interesting ideas and spending most of the elaborate luncheon thinking about which talks I would listen to later that day. But while the tidbits of insight I gained were no doubt highly entertaining at the time, the only thing I can clearly recall 7 months later was a discussion of how Hollywood adapted its view of Computer Security over time.&lt;/p&gt;
-
-&lt;p&gt;Since that talk and my listing of films got me watching &lt;em&gt;Tron&lt;/em&gt; and &lt;em&gt;Space Camp&lt;/em&gt; for the first time I can&amp;rsquo;t entirely complain, but something was missing.&lt;/p&gt;
-
-&lt;p&gt;I spent that first night curled up with Google, trying to identify how better to engage in the later days of the conference. The clear answer shining through: people matter more than technical talks, so go talk to them! I did my best and connected with a well know personality who lived in the same city as me.&lt;/p&gt;
-
-&lt;p&gt;But believe it or not, walking up to strangers, introducing myself, and engaging in conversation is not a strength of mine. A shocking admission from a lifelong nerd, I know. I resolved to &lt;a href=&#34;../FOSS-ASIA-2017&#34;&gt;be better&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
     

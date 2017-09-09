@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://frenata.me/blog/elm-localstorage/</loc>
+    <lastmod>2017-09-09T11:44:33+07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://frenata.me/cv/</loc>
     <lastmod>2017-06-17T14:38:15+07:00</lastmod>
   </url>
@@ -108,13 +113,13 @@
   
   <url>
     <loc>http://frenata.me/blog/</loc>
-    <lastmod>2017-06-11T15:03:12+07:00</lastmod>
+    <lastmod>2017-09-09T11:44:33+07:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://frenata.me/</loc>
-    <lastmod>2017-06-17T14:38:15+07:00</lastmod>
+    <lastmod>2017-09-09T11:44:33+07:00</lastmod>
     <priority>0</priority>
   </url>
   

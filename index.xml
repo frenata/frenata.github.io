@@ -6,8 +6,94 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 17 Jun 2017 14:38:15 +0700</lastBuildDate>
+    <lastBuildDate>Sat, 09 Sep 2017 11:44:33 +0700</lastBuildDate>
     <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Saving a partial Elm Model to LocalStorage</title>
+      <link>http://frenata.me/blog/elm-localstorage/</link>
+      <pubDate>Sat, 09 Sep 2017 11:44:33 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/elm-localstorage/</guid>
+      <description>
+
+&lt;h3 id=&#34;pollution&#34;&gt;Pollution&lt;/h3&gt;
+
+&lt;p&gt;I was nearly finished building a relatively simple webapp to &lt;a href=&#34;http://stocksim.frenata.net/&#34;&gt;simulate stock trading&lt;/a&gt;, when a problem I had set aside from the beginning of the work came looming back: storing the data.&lt;/p&gt;
+
+&lt;p&gt;The app gives you some money to play with and allows you to buy and sell stocks, but the portfolio data was purely ephemeral, vanishing with a refreshed page. That doesn&amp;rsquo;t make much sense for a simulation that would most likely be used over a number of days.&lt;/p&gt;
+
+&lt;p&gt;But I had set the issue aside in favor of building out the actual features, knowing that eventually I would have to get my hands dirty in the world of Elm &amp;ldquo;ports&amp;rdquo;, a feature that allows non-functional JS code to interop with the clean and pure Elm code.&lt;/p&gt;
+
+&lt;h3 id=&#34;copypasta&#34;&gt;Copypasta&lt;/h3&gt;
+
+&lt;p&gt;A little &lt;a href=&#34;http://lmgtfy.com/?q=elm+localstorage&#34;&gt;research&lt;/a&gt; turned up some useful information, including a lovely tutorial on building Elm apps that included detailed instructions on how to setup ports for localStorage.&lt;/p&gt;
+
+&lt;p&gt;Hurrah!&lt;/p&gt;
+
+&lt;p&gt;There wasn&amp;rsquo;t much to implement, and it mostly made sense.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;a few extra lines of JS in my index.html, to
+
+&lt;ul&gt;
+&lt;li&gt;initialize the Elm app with the stored model&lt;/li&gt;
+&lt;li&gt;save the model to storage&lt;/li&gt;
+&lt;li&gt;remove the model from storage&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;some &lt;code&gt;port&lt;/code&gt; declarations in Elm&lt;/li&gt;
+&lt;li&gt;a helper function with this type: &lt;code&gt;Model -&amp;gt; ( Model, Cmd Msg )&lt;/code&gt; that needed to be inserted into the &lt;code&gt;update&lt;/code&gt; function, capturing certain model updates to create the side effect of the JS interop&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The last one was the weirdest to wrap my head around, but the entire effort was promisingly easy.&lt;/p&gt;
+
+&lt;h3 id=&#34;friendship-is-magic&#34;&gt;Friendship is Magic&lt;/h3&gt;
+
+&lt;p&gt;As is typical of making changes to an Elm program, compiling resulted in a friendly error message.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Port `setStorage` is trying to communicate an unsupported type.
+
+352| port setStorage : Model -&amp;gt; Cmd msg
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The specific unsupported type is:
+
+	Dict.Dict String { name : String, shares : Int, price : Float }
+
+The types of values that can flow through in and out of Elm include:
+
+	Ints, Floats, Bools, Strings, Maybes, Lists, Arrays, Tuples, Json.Values,
+	and concrete records.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This was a problem. My data model did use a &lt;code&gt;Dict&lt;/code&gt; to store stock positions in a user&amp;rsquo;s portfolio, but apparently Elm wasn&amp;rsquo;t having that.&lt;/p&gt;
+
+&lt;p&gt;I poked around to see if I could modify the code I&amp;rsquo;d only half-understood to send/recieve something other than the whole model. The good news: yes. The bad news: the data I actually cared about storing was that &lt;code&gt;Dict&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;life-finds-a-way&#34;&gt;Life Finds a Way&lt;/h3&gt;
+
+&lt;p&gt;After a few half starts and many more friendly error messages, I started to put together a solution. The &lt;code&gt;Dict&lt;/code&gt; library helpfully included the pair of functions &lt;code&gt;toList&lt;/code&gt; and &lt;code&gt;fromList&lt;/code&gt;, which according to the compiler &lt;em&gt;were&lt;/em&gt; eligible for sending via ports.&lt;/p&gt;
+
+&lt;p&gt;On examination, the only data that needed to be kept was the cash balance and the list of positions, so the concrete data type that ended up being sent/recieved was:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;(Float, List (String, Position))&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Position is a concrete record type with a couple of pieces of relevant data. Probably there&amp;rsquo;s still some useful refactoring to be done here by aliasing the above tuple to a named type, since it shows up in several places.&lt;/p&gt;
+
+&lt;h3 id=&#34;failure-is-victory&#34;&gt;Failure is Victory&lt;/h3&gt;
+
+&lt;p&gt;Only a smattering more work remained after this insight. My &lt;code&gt;init&lt;/code&gt; function needed to rebuild the floating balance and the dictionary, leaving it with this ugly type signature:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;init : Maybe ( Float, List ( String, Position ) ) -&amp;gt; ( Model, Cmd Msg )&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s all I can do to &lt;em&gt;not&lt;/em&gt; go create a SavedPortfolio type alias right now.&lt;/p&gt;
+
+&lt;p&gt;I also updated the JS to provide a better key name to the saved data: &amp;ldquo;portfolio&amp;rdquo; rather than &amp;ldquo;model&amp;rdquo;. That led me on a crazy bughunt that only ended when I realized I had changed the key value only in the function calls to save and remove&amp;hellip; but not to initialize the Elm app. Put that in the &amp;ldquo;literals should be defined as constants&amp;rdquo; file.&lt;/p&gt;
+
+&lt;p&gt;The actual code for stock trading is not very interesting, but delving into using localStorage and ports ended up forcing me to learn a bunch. I consider myself fortunate that my use case was &lt;em&gt;just&lt;/em&gt; different enough from the tutorial code as to not work at all. If my model had been &amp;ldquo;sendable&amp;rdquo; in the first place, the code would have worked, I would have been satisfied, but I would have walked away without much actual knowledge of &lt;em&gt;how&lt;/em&gt; it worked.&lt;/p&gt;
+
+&lt;p&gt;tl;dr: Failing is learning.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Andrew Nichols : Software Engineer</title>
@@ -953,38 +1039,6 @@ public int update(
 &lt;li&gt;Ask around about social gatherings. At least one attendee came to the speaker/team-only event just because she asked about it.&lt;/li&gt;
 &lt;/ul&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>FOSS ASIA 2017</title>
-      <link>http://frenata.me/blog/FOSS-ASIA-2017/</link>
-      <pubDate>Fri, 24 Mar 2017 14:58:40 +0700</pubDate>
-      
-      <guid>http://frenata.me/blog/FOSS-ASIA-2017/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;../My-First-Conference&#34;&gt;My first conference&lt;/a&gt; had gone acceptably well, but I had resolved to &lt;strong&gt;be better&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;When the stars aligned and I was able to attend another conference this March, FOSSASIA 2017, I &lt;em&gt;was&lt;/em&gt; better. Drawing on yet another tidbit of advice (from where I know not), I decided that rather than just buying a ticket and attending the conference I would volunteer. Ideally this would force me to engage with people rather the particulars of technical talks.&lt;/p&gt;
-
-&lt;p&gt;There was plenty of opportunity before the conference to assist: most notably with the actual software that would power the registration and the event scheduling, but a brutal set of obligations all mananged to collide in the weeks beforehand and I didn&amp;rsquo;t participate. Instead, I arrived in Singapore two days early, ready to attend a volunteer briefing on Thursday, the day before the conference began. I made it to the venue, struggled to the rest of the team, and sat down for a coffee to communicate on the WhatsApp chat channel.&lt;/p&gt;
-
-&lt;p&gt;Pretty much because I was there, I was grabbed to help out with the wifi deployment and provisioning, and so I soon found myself scurrying around, plugging into WiFi access points, running new ethernet cabling, and crimping connectors. As these things go, there were last minute changes and issues to overcome, but overcome them we did: myself, another out of town volunteer, and two of the primary organizers. The most important thing I did that day? (Beyond having the 568-A/B standards memorized, which really didn&amp;rsquo;t matter that much.) I said yes when asked if I could help.&lt;/p&gt;
-
-&lt;p&gt;I spent the next day greeting every speaker, attendee, and exhibitor that came through the doors, directing them to the appropriate places, and solving problems like missing conference badges. &amp;ldquo;Wal-mart greeter&amp;rdquo; is perhaps not anyone&amp;rsquo;s idea of a great job, but it&amp;rsquo;s actually a pretty awesome gig to quickly writeup a custom badge for a sponsor from Google, or in a pinch help diagnose WiFi connectivity issues.&lt;/p&gt;
-
-&lt;p&gt;The second day, I was assigned to &amp;ldquo;moderate&amp;rdquo; the exhibtors hall, so I spent the day talking to various vendors, making sure they had what they needed, running errands, and generally trying to make their lives easier. And in the meantime I had plenty of opportunity to talk to people about some amazing projects: building radio telescopes to talk to amateur sattelites, &amp;ldquo;flying&amp;rdquo; a airplane with brainwaves, building a village in China using entirely open-source designs and tools, and doing augmented-reality with HTML/CSS.&lt;/p&gt;
-
-&lt;p&gt;I ambled into the conference on the third day a little bleary, having been kept up most of the night by an apparently all night party in the room next door at my hostel. I wasn&amp;rsquo;t scheduled for any tasks, so I thought I might have the chance to actually listen to some talks&amp;hellip; Well I sort of did. I was quickly grabbed and assigned to take the place of a missing volunteer to run the talks in the largest breakout room. What followed was a not-great morning of me stumbling through a job I didn&amp;rsquo;t expect, but again, I said yes.&lt;/p&gt;
-
-&lt;p&gt;In between many hours of hard work, rushed meals, and achey feet were evening social events where I had the chance to chat casually with people I&amp;rsquo;d met at various other times throughout the conference or meet others I hadn&amp;rsquo;t quite connected with. Highlights from these and other social ocassions:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;somehow finding myself in between an active Linux kernel developer and an active FreeBSD kernel developer discussing the relative merits of each ecosystem&lt;/li&gt;
-&lt;li&gt;an &amp;ldquo;American moment&amp;rdquo; between Jakarta-based me, a Singapore-based executive, and a Hong Kong-based developer where we shared how much we like visiting the USA but not actually living there&lt;/li&gt;
-&lt;li&gt;talking about the big project I&amp;rsquo;m working on with people actually familiar with the tech stack&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;But what &lt;a href=&#34;../Lessons-Learned&#34;&gt;did I learn&lt;/a&gt;?&lt;/p&gt;
 </description>
     </item>
     

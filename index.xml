@@ -2,12 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Kata Frenata</title>
-    <link>http://frenata.me/index.xml</link>
+    <link>http://frenata.me/</link>
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 09 Sep 2017 11:44:33 +0700</lastBuildDate>
-    <atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 26 Sep 2017 05:02:06 -0400</lastBuildDate>
+    
+	<atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RC 0: All Talk</title>
+      <link>http://frenata.me/blog/rc-0/</link>
+      <pubDate>Tue, 26 Sep 2017 05:02:06 -0400</pubDate>
+      
+      <guid>http://frenata.me/blog/rc-0/</guid>
+      <description>I&amp;rsquo;m still not sure how to properly do the work of reflection while I&amp;rsquo;m at RC.
+Blogposts for each day? Potentially unfocused, a lot of work to feel good about publishing to the harshness of the tubes, but easily available to family/friends/future employers.
+Zulip checkins? Lack of focus isn&amp;rsquo;t necessarily considered a problem, a quick bullet list is probably plenty of effort, and the audience is highly receptive&amp;hellip;but also inherently limited.</description>
+    </item>
     
     <item>
       <title>Saving a partial Elm Model to LocalStorage</title>
@@ -15,180 +28,8 @@
       <pubDate>Sat, 09 Sep 2017 11:44:33 +0700</pubDate>
       
       <guid>http://frenata.me/blog/elm-localstorage/</guid>
-      <description>
-
-&lt;h3 id=&#34;pollution&#34;&gt;Pollution&lt;/h3&gt;
-
-&lt;p&gt;I was nearly finished building a relatively simple webapp to &lt;a href=&#34;http://stocksim.frenata.net/&#34;&gt;simulate stock trading&lt;/a&gt;, when a problem I had set aside from the beginning of the work came looming back: storing the data.&lt;/p&gt;
-
-&lt;p&gt;The app gives you some money to play with and allows you to buy and sell stocks, but the portfolio data was purely ephemeral, vanishing with a refreshed page. That doesn&amp;rsquo;t make much sense for a simulation that would most likely be used over a number of days.&lt;/p&gt;
-
-&lt;p&gt;But I had set the issue aside in favor of building out the actual features, knowing that eventually I would have to get my hands dirty in the world of Elm &amp;ldquo;ports&amp;rdquo;, a feature that allows non-functional JS code to interop with the clean and pure Elm code.&lt;/p&gt;
-
-&lt;h3 id=&#34;copypasta&#34;&gt;Copypasta&lt;/h3&gt;
-
-&lt;p&gt;A little &lt;a href=&#34;http://lmgtfy.com/?q=elm+localstorage&#34;&gt;research&lt;/a&gt; turned up some useful information, including a lovely tutorial on building Elm apps that included detailed instructions on how to setup ports for localStorage.&lt;/p&gt;
-
-&lt;p&gt;Hurrah!&lt;/p&gt;
-
-&lt;p&gt;There wasn&amp;rsquo;t much to implement, and it mostly made sense.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;a few extra lines of JS in my index.html, to
-
-&lt;ul&gt;
-&lt;li&gt;initialize the Elm app with the stored model&lt;/li&gt;
-&lt;li&gt;save the model to storage&lt;/li&gt;
-&lt;li&gt;remove the model from storage&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;some &lt;code&gt;port&lt;/code&gt; declarations in Elm&lt;/li&gt;
-&lt;li&gt;a helper function with this type: &lt;code&gt;Model -&amp;gt; ( Model, Cmd Msg )&lt;/code&gt; that needed to be inserted into the &lt;code&gt;update&lt;/code&gt; function, capturing certain model updates to create the side effect of the JS interop&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The last one was the weirdest to wrap my head around, but the entire effort was promisingly easy.&lt;/p&gt;
-
-&lt;h3 id=&#34;friendship-is-magic&#34;&gt;Friendship is Magic&lt;/h3&gt;
-
-&lt;p&gt;As is typical of making changes to an Elm program, compiling resulted in a friendly error message.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Port `setStorage` is trying to communicate an unsupported type.
-
-352| port setStorage : Model -&amp;gt; Cmd msg
-     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The specific unsupported type is:
-
-	Dict.Dict String { name : String, shares : Int, price : Float }
-
-The types of values that can flow through in and out of Elm include:
-
-	Ints, Floats, Bools, Strings, Maybes, Lists, Arrays, Tuples, Json.Values,
-	and concrete records.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This was a problem. My data model did use a &lt;code&gt;Dict&lt;/code&gt; to store stock positions in a user&amp;rsquo;s portfolio, but apparently Elm wasn&amp;rsquo;t having that.&lt;/p&gt;
-
-&lt;p&gt;I poked around to see if I could modify the code I&amp;rsquo;d only half-understood to send/recieve something other than the whole model. The good news: yes. The bad news: the data I actually cared about storing was that &lt;code&gt;Dict&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h3 id=&#34;life-finds-a-way&#34;&gt;Life Finds a Way&lt;/h3&gt;
-
-&lt;p&gt;After a few half starts and many more friendly error messages, I started to put together a solution. The &lt;code&gt;Dict&lt;/code&gt; library helpfully included the pair of functions &lt;code&gt;toList&lt;/code&gt; and &lt;code&gt;fromList&lt;/code&gt;, which according to the compiler &lt;em&gt;were&lt;/em&gt; eligible for sending via ports.&lt;/p&gt;
-
-&lt;p&gt;On examination, the only data that needed to be kept was the cash balance and the list of positions, so the concrete data type that ended up being sent/recieved was:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;(Float, List (String, Position))&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Position is a concrete record type with a couple of pieces of relevant data. Probably there&amp;rsquo;s still some useful refactoring to be done here by aliasing the above tuple to a named type, since it shows up in several places.&lt;/p&gt;
-
-&lt;h3 id=&#34;failure-is-victory&#34;&gt;Failure is Victory&lt;/h3&gt;
-
-&lt;p&gt;Only a smattering more work remained after this insight. My &lt;code&gt;init&lt;/code&gt; function needed to rebuild the floating balance and the dictionary, leaving it with this ugly type signature:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;init : Maybe ( Float, List ( String, Position ) ) -&amp;gt; ( Model, Cmd Msg )&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;It&amp;rsquo;s all I can do to &lt;em&gt;not&lt;/em&gt; go create a SavedPortfolio type alias right now.&lt;/p&gt;
-
-&lt;p&gt;I also updated the JS to provide a better key name to the saved data: &amp;ldquo;portfolio&amp;rdquo; rather than &amp;ldquo;model&amp;rdquo;. That led me on a crazy bughunt that only ended when I realized I had changed the key value only in the function calls to save and remove&amp;hellip; but not to initialize the Elm app. Put that in the &amp;ldquo;literals should be defined as constants&amp;rdquo; file.&lt;/p&gt;
-
-&lt;p&gt;The actual code for stock trading is not very interesting, but delving into using localStorage and ports ended up forcing me to learn a bunch. I consider myself fortunate that my use case was &lt;em&gt;just&lt;/em&gt; different enough from the tutorial code as to not work at all. If my model had been &amp;ldquo;sendable&amp;rdquo; in the first place, the code would have worked, I would have been satisfied, but I would have walked away without much actual knowledge of &lt;em&gt;how&lt;/em&gt; it worked.&lt;/p&gt;
-
-&lt;p&gt;tl;dr: Failing is learning.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Andrew Nichols : Software Engineer</title>
-      <link>http://frenata.me/cv/</link>
-      <pubDate>Sat, 17 Jun 2017 14:38:15 +0700</pubDate>
-      
-      <guid>http://frenata.me/cv/</guid>
-      <description>
-
-&lt;h3 id=&#34;projects&#34;&gt;Projects&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;PLC program to automate control valve position, allowing client to eliminate manual inspection and tuning.&lt;/li&gt;
-&lt;li&gt;Simulation tool to allow GameMasters to more accurately judge expected deadliness of prepared combat encounters.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/wordbeat&#34;&gt;Application&lt;/a&gt; and &lt;a href=&#34;https://github.com/frenata/thesis&#34;&gt;report&lt;/a&gt; that searches and analyzes digitized lesson plans, helping school to verify learning goals. App accomplishes in minutes what previously took administrators hours to do by hand.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/gomua&#34;&gt;CLI utility&lt;/a&gt; in Go to send/recieve/index mail. Remote hackathon project.&lt;/li&gt;
-&lt;li&gt;Collection of microservices, &lt;a href=&#34;https://github.com/frenata/api-frenata&#34;&gt;written&lt;/a&gt; in Go and &lt;a href=&#34;https://api.frenata.net/&#34;&gt;running&lt;/a&gt; on Heroku.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;work-experience&#34;&gt;Work Experience&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Self-employed : freelance software engineer : &lt;em&gt;current&lt;/em&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/codeclimate/test-reporter/pull/133&#34;&gt;Expanded&lt;/a&gt; parseable formats for a code coverage tool.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;Thunderco : May 2008 - October 2013 : PLC programmer, CAD/CAM designer
-
-&lt;ul&gt;
-&lt;li&gt;Implemented custom PLC software to manage control valves.&lt;/li&gt;
-&lt;li&gt;Designed, programmed, and machined standardized and custom built industrial parts for oil pipeline control packages&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;other-experience&#34;&gt;Other Experience&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;FOSSASIA 2017 : March 2017 : volunteer
-
-&lt;ul&gt;
-&lt;li&gt;WiFi deployment; moderator for DevOps track&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;Ipeka IICS : October 2014 - June 2016 : volunteer teacher
-
-&lt;ul&gt;
-&lt;li&gt;Trained and tutored kids in basic programming concepts using C++&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;TechKnowHow : 2002-2003 : summer instructor
-
-&lt;ul&gt;
-&lt;li&gt;Trained elementary and junior high kids in the use of game programming and lego robotics.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;education&#34;&gt;Education&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Recurse Center : September - December 2017&lt;/li&gt;
-&lt;li&gt;Coursera : May 2017 - &lt;em&gt;present&lt;/em&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Calculus, Cryptography&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;WGU : BS Software Development : May 2017
-
-&lt;ul&gt;
-&lt;li&gt;Organized student programming collaboration on GitHub&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;languages&#34;&gt;Languages&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;em&gt;Professional&lt;/em&gt;: Go, Java&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Proficient&lt;/em&gt;: Elm, JavaScript, Python&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;other-proficiencies-and-certifications&#34;&gt;Other Proficiencies and Certifications&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;SQL, Git, Elasticsearch, Docker, G-code&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;CompTIA&lt;/em&gt;: A+, Network+, Security+, Project+&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Oracle&lt;/em&gt;: OCA/OCP Java Programmer&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;links&#34;&gt;Links&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata&#34;&gt;Github&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://frenata.me/blog/&#34;&gt;Technical Blog&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkedin.com/in/dandrewnichols&#34;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;mailto:andrew@frenata.net&#34;&gt;Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <description>Pollution I was nearly finished building a relatively simple webapp to simulate stock trading, when a problem I had set aside from the beginning of the work came looming back: storing the data.
+The app gives you some money to play with and allows you to buy and sell stocks, but the portfolio data was purely ephemeral, vanishing with a refreshed page. That doesn&amp;rsquo;t make much sense for a simulation that would most likely be used over a number of days.</description>
     </item>
     
     <item>
@@ -197,73 +38,8 @@ The types of values that can flow through in and out of Elm include:
       <pubDate>Sun, 11 Jun 2017 15:03:12 +0700</pubDate>
       
       <guid>http://frenata.me/blog/freelance101/</guid>
-      <description>
-
-&lt;h2 id=&#34;or-how-i-started-getting-paid-to-code&#34;&gt;or, how I started getting paid to code&lt;/h2&gt;
-
-&lt;p&gt;First, a disclaimer: I make no claims to teach anyone how to Freelance successfully, despite the title. This merely chronicles my first steps into freelancing, from zero to&amp;hellip; more than zero?&lt;/p&gt;
-
-&lt;h3 id=&#34;0-so-i-wanna-be-a-freelancer&#34;&gt;0: So I wanna be a freelancer!?&lt;/h3&gt;
-
-&lt;p&gt;It&amp;rsquo;s an awkward time career-wise for me. I&amp;rsquo;ve secured some useful &amp;ldquo;credentials&amp;rdquo; and I do have some track record of employment, but not that many projects to show off to a future employer. Worse is the question of time and timing: I&amp;rsquo;m the primary caregiver of my 1 year old son, which limits how much time I can commit. No 9-5s for me. Even a remote/distributed job is tricky, since I&amp;rsquo;ll be spending 3 months working on my craft later at RC later this year.&lt;/p&gt;
-
-&lt;p&gt;Into that picture stepped contract work, and I decided to pursue the freelance opportunities for the next several months and see where it leads. Ideally this will end with extra spending money and some shiny projects to talk about.&lt;/p&gt;
-
-&lt;h3 id=&#34;1-the-bear-necessities&#34;&gt;1: The bear necessities&amp;hellip;&lt;/h3&gt;
-
-&lt;p&gt;Since I wasn&amp;rsquo;t especially interested in doing a big self-marketing push, I elected to use a freelancing platform. Upwork was often mentioned, so I whipped up a quick profile there, claiming to be a &amp;ldquo;Golang and Java Developer&amp;rdquo;, with a sentence or two describing my interests.&lt;/p&gt;
-
-&lt;p&gt;That was about it; it was woefully insufficient. Somehow within 6 hours of creating a profile I was invited to apply to a job, in what I can only assume was a very silly client just spamming invites. (That job still hasn&amp;rsquo;t hired weeks later.)&lt;/p&gt;
-
-&lt;h3 id=&#34;10-getting-my-first-job&#34;&gt;10: Getting my first job&lt;/h3&gt;
-
-&lt;p&gt;When it became apparent that the initial invite was vapor, I started to take it seriously, and did a little reading on strategies for bidding on jobs. A few of the principles I&amp;rsquo;ve tried to follow:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;be picky about what jobs you apply to (no shotgunning!)&lt;/li&gt;
-&lt;li&gt;use whatever info is given in the initial posting to do preliminary research on what work will be necessary&lt;/li&gt;
-&lt;li&gt;&amp;hellip;and ask solid questions about the job based on that research&lt;/li&gt;
-&lt;li&gt;craft each proposal to each client&lt;/li&gt;
-&lt;li&gt;only apply to jobs you know you can accomplish&lt;/li&gt;
-&lt;li&gt;don&amp;rsquo;t undersell your skills&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;With a still-skimpy profile, I probably had little reason to actually be chosen for any work, but somehow I landed a bid for a fixed price job that I thought I could finish within enough time to maintain a nice hourly rate. My proposal was friendly and well-researched though, and I suppose that must count for something.&lt;/p&gt;
-
-&lt;h3 id=&#34;11-doing-the-work-the-fun-part&#34;&gt;11: Doing the work (the fun part!)&lt;/h3&gt;
-
-&lt;p&gt;Amazingly, the job I landed was to extend an existing open source library, and the client confirmed that it would be perfectly fine to fork, write the code, and submit a pull request.&lt;/p&gt;
-
-&lt;p&gt;Other clients have insisted on full ownership of the code: so while I could talk about the project, the code wouldn&amp;rsquo;t belong to me anymore. I consider myself wildly fortunate to start with this ideal circumstance.&lt;/p&gt;
-
-&lt;p&gt;The &lt;a href=&#34;https://github.com/codeclimate/test-reporter/pull/133&#34;&gt;work&lt;/a&gt; involved parsing code coverage files, processing them, and outputting the data into a unified format. I learned a dash of Swift for the project, the nominal format, and later expanded the formatter I wrote to any program using &lt;code&gt;gcov&lt;/code&gt; to generate coverage files.&lt;/p&gt;
-
-&lt;p&gt;Perhaps the most interesting/educational part of the work was building a &lt;a href=&#34;https://github.com/frenata/test-reporter/blob/swiftcov_formatter/examples/gcov/Dockerfile&#34;&gt;Dockerfile&lt;/a&gt; to &amp;ldquo;demo&amp;rdquo; my work. I&amp;rsquo;d used Docker before, but mostly I&amp;rsquo;d worked with existing images to simplify the dev environment, rather than writing my own containers.&lt;/p&gt;
-
-&lt;p&gt;A sample of the Dockerfile process, follows, demoing the process of using &lt;code&gt;gcc&lt;/code&gt; and &lt;code&gt;gcov&lt;/code&gt; to actually generate a coverage file from a simple C program.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# run gcov on example file
-WORKDIR $CCTR/formatters/gcov/examples
-RUN rm *.gcov
-RUN gcc -fprofile-arcs -ftest-coverage *.c
-RUN ./a.out
-RUN gcov *.c
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;100-a-better-profile-aka-virtuous-bragging&#34;&gt;100: A better profile (aka virtuous bragging)&lt;/h3&gt;
-
-&lt;p&gt;I finished the job in less than a week, ahead of schedule, but ended up waiting quite a while for the client to verify the work. I&amp;rsquo;m sure I was a relatively low priority for a fast moving company.&lt;/p&gt;
-
-&lt;p&gt;In the meantime, confident that I could indeed get paid to do this, I turned back to my woeful &lt;a href=&#34;https://www.upwork.com/freelancers/~013c78855eb142b6b7?viewMode=1&#34;&gt;profile&lt;/a&gt;. I wrote up reports on the project I&amp;rsquo;d completed, my senior thesis project, and the FCC/p1xt &amp;ldquo;Speedrun&amp;rdquo; collection of microservices.&lt;/p&gt;
-
-&lt;p&gt;I added some more certifications that I&amp;rsquo;ve earned and took a few &amp;ldquo;skills tests&amp;rdquo;. I&amp;rsquo;m quite skeptical that clients look at any of this, but it might matter to some!&lt;/p&gt;
-
-&lt;p&gt;Most importantly, I rewrote my main blurb, focusing on concrete things that I can produce and professional values rather than abstract skills. Of course, it&amp;rsquo;s still hard to say if any of this is effective, but I&amp;rsquo;ve been involved in a few conversations about jobs lately, and the number of times my profile has been &lt;em&gt;discovered&lt;/em&gt; has been increasing.&lt;/p&gt;
-
-&lt;h3 id=&#34;101-keeping-calm&#34;&gt;101: Keeping calm&lt;/h3&gt;
-
-&lt;p&gt;I&amp;rsquo;m applying for more jobs these days, but still only about 12 total since beginning this journey. 4 of those have resulted in serious discussions with the client about the work. I&amp;rsquo;m still not sure what clients expect, but I&amp;rsquo;m feeling much better about my ability to get paid to do this kind of work.&lt;/p&gt;
-</description>
+      <description>or, how I started getting paid to code First, a disclaimer: I make no claims to teach anyone how to Freelance successfully, despite the title. This merely chronicles my first steps into freelancing, from zero to&amp;hellip; more than zero?
+0: So I wanna be a freelancer!? It&amp;rsquo;s an awkward time career-wise for me. I&amp;rsquo;ve secured some useful &amp;ldquo;credentials&amp;rdquo; and I do have some track record of employment, but not that many projects to show off to a future employer.</description>
     </item>
     
     <item>
@@ -272,18 +48,9 @@ RUN gcov *.c
       <pubDate>Sun, 21 May 2017 12:52:18 +0700</pubDate>
       
       <guid>http://frenata.me/blog/running-goals/</guid>
-      <description>&lt;p&gt;I decided this week to stop haphazardly trying to get more physically fit but instead shoot for a concrete goal: running a 5K.&lt;/p&gt;
-
-&lt;p&gt;Physical exercise can&amp;rsquo;t be that different than mental exercise right? Having a goal and pushing towards it means miles better productivity when it comes to coding or computers. It seems logical the same must be true in other aspects of life.&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;m following a &lt;a href=&#34;https://www.verywell.com/how-to-train-to-run-your-first-5k-2911619&#34;&gt;guide&lt;/a&gt; and have a goal race pace in mind: 30 minutes. That isn&amp;rsquo;t particularly fast for my gender/age, but a little reaserch indicated that the 28-32 minute range was &amp;ldquo;acceptable&amp;rdquo; for a first timer. It&amp;rsquo;s a 10 kph pace, something I (against all odds!) mananged to keep up this week for 1.6 km.&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;ve never &lt;em&gt;loved&lt;/em&gt; running as much as some, but it&amp;rsquo;s easy to set solid goals with running, and I actually did run the mile in 7th/8th grade.&lt;/p&gt;
-
-&lt;p&gt;And maybe with a goal in mind, rather than just &amp;ldquo;you should run&amp;rdquo;, I actually will enjoy it!&lt;/p&gt;
-
-&lt;p&gt;Looking around locally, my best bet for an actual race might be &lt;a href=&#34;http://www.balisummerbeachrun.com/&#34;&gt;Bali&lt;/a&gt; in August. But on a more casual level I can run a &amp;ldquo;race&amp;rdquo; at a park sooner than that.&lt;/p&gt;
-</description>
+      <description>I decided this week to stop haphazardly trying to get more physically fit but instead shoot for a concrete goal: running a 5K.
+Physical exercise can&amp;rsquo;t be that different than mental exercise right? Having a goal and pushing towards it means miles better productivity when it comes to coding or computers. It seems logical the same must be true in other aspects of life.
+I&amp;rsquo;m following a guide and have a goal race pace in mind: 30 minutes.</description>
     </item>
     
     <item>
@@ -292,78 +59,9 @@ RUN gcov *.c
       <pubDate>Mon, 15 May 2017 10:50:36 +0700</pubDate>
       
       <guid>http://frenata.me/blog/schedule/</guid>
-      <description>
-
-&lt;p&gt;Since finishing up at WGU, I&amp;rsquo;ve felt myself floundering for lack of structure. I was getting stuff done&amp;hellip;but it was a little bit of that, a little bit of this, ooh that looks interesting, squirrel!&lt;/p&gt;
-
-&lt;p&gt;I knew I needed some added structure to shape and guide my learning, but what?&lt;/p&gt;
-
-&lt;p&gt;This became even more relevant once I landed a couple of freelancing jobs. Huge portions of my days are spent caring for an infant, so I can&amp;rsquo;t afford to &lt;em&gt;not&lt;/em&gt; be productive when I have the chance. I still wanted to keep pushing myself to learn, and I mananged to narrow down the domains I would spend my time with to two: functional programming and security. Plus maths. Knowing that maths will pay off in pretty much every aspect of software/CS that I later delve into, I wanted to refresh my math.&lt;/p&gt;
-
-&lt;p&gt;Still, simply resolving what to focus on felt insufficient. On any given day I was simply going with sounded good that day, which meant I might spend a few days on a subject, but let another subject lie dormant. A subject a day&amp;hellip;keeps the teacher away?&lt;/p&gt;
-
-&lt;h3 id=&#34;the-schedule&#34;&gt;The Schedule&lt;/h3&gt;
-
-&lt;p&gt;Reflection Sunday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;a day for writing and thinking about my learning, and meta-cognition in general&lt;/li&gt;
-&lt;li&gt;also humanities reading&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Math Monday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;keeping a heavy focus on &amp;ldquo;pure&amp;rdquo; math, in whatever forms&lt;/li&gt;
-&lt;li&gt;currently: refreshing Calculus via &lt;a href=&#34;https://www.coursera.org/learn/calculus1&#34;&gt;tOSU&amp;rsquo;s excellent MOOC @Coursera&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;future: Calculus 2, linear algebra, predicate calculus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Work Tuesday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;focus on projects and gigs&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Crypto Wednesday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;focus on security issues, either InfoSec broadly or AppSec&lt;/li&gt;
-&lt;li&gt;includes penetration testing exercises and games&lt;/li&gt;
-&lt;li&gt;currently: &lt;a href=&#34;https://www.coursera.org/learn/crypto/&#34;&gt;Cryptography 1&lt;/a&gt; and &lt;a href=&#34;http://cryptopals.com&#34;&gt;CryptoPals&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;future: various other wargames and CTFs&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Work Thursday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;see Tuesday&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Functional Friday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;focus on functional programming in all aspects, this is in many ways applied math of course
-
-&lt;ul&gt;
-&lt;li&gt;currently: learning Elm &lt;a href=&#34;https://guide.elm-lang.org&#34;&gt;official guide&lt;/a&gt; and &lt;a href=&#34;https://www.elm-tutorial.org/en/&#34;&gt;web app tutorial&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;future: Elixir, Haskell, Clojure&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Wildcard Saturday&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;a day to do the things that don&amp;rsquo;t fit anywhere else&lt;/li&gt;
-&lt;li&gt;ideally by keeping this a dedicated day, I won&amp;rsquo;t get distracted by something shiny and can instead say &amp;ldquo;I&amp;rsquo;ll play with it on Saturday&amp;rdquo;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;in-practice&#34;&gt;In Practice&lt;/h3&gt;
-
-&lt;p&gt;I may not keep to this 100% of the time but I&amp;rsquo;m hoping to be fairly strict. Additionally, the educational focus on any given day may only be an hour or two, depending on my need to focus on various projects and take care of the baby.&lt;/p&gt;
-
-&lt;p&gt;On the advice of my own personal Master of Education, I&amp;rsquo;ll also try to sprinkle in some short math exercises throughout the week to better retain the math I learn. Perhaps via Khan Academy?&lt;/p&gt;
-</description>
+      <description>Since finishing up at WGU, I&amp;rsquo;ve felt myself floundering for lack of structure. I was getting stuff done&amp;hellip;but it was a little bit of that, a little bit of this, ooh that looks interesting, squirrel!
+I knew I needed some added structure to shape and guide my learning, but what?
+This became even more relevant once I landed a couple of freelancing jobs. Huge portions of my days are spent caring for an infant, so I can&amp;rsquo;t afford to not be productive when I have the chance.</description>
     </item>
     
     <item>
@@ -372,101 +70,8 @@ RUN gcov *.c
       <pubDate>Tue, 09 May 2017 21:14:14 +0700</pubDate>
       
       <guid>http://frenata.me/blog/speedrun-file-metadata/</guid>
-      <description>
-
-&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/files/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/files&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;one-step-at-a-time&#34;&gt;One Step at a Time&lt;/h3&gt;
-
-&lt;p&gt;There several features I needed to implement for this project that I hadn&amp;rsquo;t done previously:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;serving actual html, rather than just instruction text or JSON responses&lt;/li&gt;
-&lt;li&gt;distinguishing and using both GET and POST methods&lt;/li&gt;
-&lt;li&gt;and then of course the core &amp;ldquo;problem&amp;rdquo; of allowing a user to upload a file and figuring out how to extract data from that file.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;I thus broke the problem down into small achievable pieces.&lt;/p&gt;
-
-&lt;p&gt;First I focused simply on serving html. I defined a file called &amp;ldquo;formfile.gtpl&amp;rdquo;, and after some poking settled on putting it in a new directory in the project root called static. The early version I used looked something like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;html&amp;gt;
-	&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;File Metadata Service&amp;lt;/title&amp;gt;
-	&amp;lt;/head&amp;gt;
-	&amp;lt;body&amp;gt;
-		&amp;lt;form action = &amp;quot;/files&amp;quot; method = &amp;quot;POST&amp;quot;&amp;gt;
-			Testing:&amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;quot;test&amp;quot; /&amp;gt;
-			&amp;lt;input type=&amp;quot;submit&amp;quot; value=&amp;quot;Submit&amp;quot; /&amp;gt;
-		&amp;lt;/form&amp;gt;
-	&amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Initially my handler simply wrote this file to the page on every request. Done.&lt;/p&gt;
-
-&lt;h3 id=&#34;the-postman-cometh&#34;&gt;The POSTman cometh&lt;/h3&gt;
-
-&lt;p&gt;Next I needed to actually handle both GET and POST methods. A &lt;a href=&#34;https://astaxie.gitbooks.io/build-web-application-with-golang/en/04.1.html&#34;&gt;chapter&lt;/a&gt; from a book about building web applications with Go proved useful. A simple &lt;code&gt;if/else&lt;/code&gt; checking &lt;code&gt;r.Method&lt;/code&gt; was sufficient. For a GET request, I served the html file. For a POST request&amp;hellip; I parsed the form, then echoed the value of my &amp;ldquo;test&amp;rdquo; value: &lt;code&gt;io.WriteString(w, r.Form[&amp;quot;test&amp;quot;][0])&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Nothing happened! Eventually I narrowed this down to a matter of routes: while my default route to this service was /files/, the POST request was trying to request /files. I don&amp;rsquo;t entirely understand the &lt;em&gt;why&lt;/em&gt; here, but routing both requests to the files handler proved sufficient to get things working.&lt;/p&gt;
-
-&lt;p&gt;I was GETing and POSTing like a PRO.&lt;/p&gt;
-
-&lt;h3 id=&#34;files-full-of-them&#34;&gt;Files Full of &amp;hellip;Them&lt;/h3&gt;
-
-&lt;p&gt;I added a file input to my form, simple enough, and turned to the matter of dealing with it in my code. My early research had turned up a promising standard library function call, &lt;a href=&#34;https://golang.org/pkg/net/http/#Request.FormFile&#34;&gt;FormFile&lt;/a&gt;. However after struggling with it for a while I realized that despite the documentation saying that &amp;ldquo;FormFile calls ParseMultipartForm and ParseForm if necessary.&amp;rdquo;, I seemed to need to call &lt;code&gt;ParseMultipartForm&lt;/code&gt; myself. Perhaps I missed something.&lt;/p&gt;
-
-&lt;p&gt;I dug into the details of the data returned by &lt;code&gt;FormFile&lt;/code&gt;. I had immediate access, through the header, to the filename and the file headers, but &lt;em&gt;size&lt;/em&gt;, my main goal, wasn&amp;rsquo;t present in those headers. I did start echoing the filename back as a proof of concept. Deep into the documentation: the backing structure &lt;em&gt;might&lt;/em&gt; be an &lt;code&gt;*os.File&lt;/code&gt; (which I could treat like any ordinary file, and get the size from), but it might not. Bummer. All I really had access to was the interfaces defined on &lt;code&gt;multipart.File&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type File interface {
-	io.Reader
-	io.ReaderAt
-	io.Seeker
-	io.Closer
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I knew how to use a &lt;code&gt;Reader&lt;/code&gt;, so I tried just reading from a file, making a buffer and loading the data into the buffer&amp;hellip;then checking the size. That might have worked, but it didn&amp;rsquo;t feel like the right approach. I didn&amp;rsquo;t care about the actual data, only how much of it there was.&lt;/p&gt;
-
-&lt;h3 id=&#34;on-the-shoulders-of-giants&#34;&gt;On the Shoulders of Giants&lt;/h3&gt;
-
-&lt;p&gt;Some googling around the problem turned up a lovely guide to doing &lt;a href=&#34;https://medium.com/dtoebe/how-to-get-a-multipart-file-size-in-golang-3ab4ab4c3e3&#34;&gt;precisely&lt;/a&gt; what I wanted. In short, the author recommended attempting to type switch to &lt;code&gt;os.File&lt;/code&gt;, grabbing the size the normal way if that succeeded, and otherwise using the &lt;code&gt;Seek&lt;/code&gt; method to find the size. The relevant code looks like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;var size int64
-switch t := file.(type) {
-case *os.File:
-	stats, _ := t.Stat()
-	size = stats.Size()
-default:
-	bytes, _ := file.Seek(0, 2)
-	size = bytes
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The somewhat arcane &lt;code&gt;file.Seek(0, 2)&lt;/code&gt; means, starting from the beginning, scan through the file until the end, and return the number of bytes passed over. Perfect!&lt;/p&gt;
-
-&lt;h3 id=&#34;wrap-it-up&#34;&gt;Wrap It Up!&lt;/h3&gt;
-
-&lt;p&gt;Only a few things remained. Though the user stories don&amp;rsquo;t required it, I added both the filename and the Content-Type to the JSON response. I had immediate access to them anyway through the file header, so why not?&lt;/p&gt;
-
-&lt;p&gt;I had also early on accidentally clicked &amp;ldquo;Submit&amp;rdquo; without actually picking a file and crashed the program, so I dealt with it now. It feels like a bit of a kludge, but I simple redirected back to the main route and quit the handler, which will then immediately be fired again. I decided to print no error to the user.&lt;/p&gt;
-
-&lt;p&gt;Finally, I added a slightly more helpful message on the main html page.&lt;/p&gt;
-
-&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;a bit of refactoring love wouldn&amp;rsquo;t hurt&lt;/li&gt;
-&lt;li&gt;investigate why /files/ vs /files matters&lt;/li&gt;
-&lt;li&gt;what other file metadata could reasonably be extracted?&lt;/li&gt;
-&lt;li&gt;there is a memory limit by nature of how &lt;code&gt;ParseMultipartForm&lt;/code&gt; works, so reporting some kind of error message (via JSON?) to users who attempt to upload large files is probably a good idea&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <description>Fresh Links  Deployed App GitHub repo  One Step at a Time There several features I needed to implement for this project that I hadn&amp;rsquo;t done previously:
+ serving actual html, rather than just instruction text or JSON responses distinguishing and using both GET and POST methods and then of course the core &amp;ldquo;problem&amp;rdquo; of allowing a user to upload a file and figuring out how to extract data from that file.</description>
     </item>
     
     <item>
@@ -475,88 +80,8 @@ default:
       <pubDate>Mon, 08 May 2017 20:43:49 +0700</pubDate>
       
       <guid>http://frenata.me/blog/speedrun-images/</guid>
-      <description>
-
-&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/images/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/images&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;my-kingdom-for-an-api-that-works&#34;&gt;My Kingdom for an API (that works!)&lt;/h3&gt;
-
-&lt;p&gt;By far the most complicated thing about this project was finding the right API to work with. Historical reading indicated that Google&amp;rsquo;s Image Search API had once been fairly open, but do they even pretend that their motto is &amp;ldquo;Don&amp;rsquo;t be evil&amp;rdquo; these days?&lt;/p&gt;
-
-&lt;p&gt;Imgur seemed a likely candidate, but unfortunately there seemed to be no easy way to request non-album images, and no easy way to extract a direct link to the image contained &lt;em&gt;in&lt;/em&gt; an album, and therefore no way to build thumbnail links. Drat.&lt;/p&gt;
-
-&lt;p&gt;Eventually I settled on Flickr, and I had to dust off an ancient Yahoo! email address to do so.&lt;/p&gt;
-
-&lt;h3 id=&#34;build-your-own-url&#34;&gt;Build your own URL&lt;/h3&gt;
-
-&lt;p&gt;The most perplexing thing about the Flickr API was that no direct link was provided in the data. Instead, provided are various pieces of data that must be manually pieced together, as their &lt;a href=&#34;https://www.flickr.com/services/api/misc.urls.html&#34;&gt;documentation&lt;/a&gt; explains:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;You can construct the source URL to a photo once you know its ID, server ID, farm ID and secret, as returned by many API methods.
-
-The URL takes the following format:
-
-https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
-	or
-https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
-	or
-https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|png)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I&amp;rsquo;m still not sure why they do it this way, but it wasn&amp;rsquo;t too hard to wire everything together from the raw API results.&lt;/p&gt;
-
-&lt;h3 id=&#34;a-series-of-tubes&#34;&gt;A Series of Tubes&lt;/h3&gt;
-
-&lt;p&gt;The verboseness of Go bit me a bit on this one, since although it makes decoding and encoding JSON values relatively easy via &lt;code&gt;struct&lt;/code&gt;s, I needed to work with three separate kinds of data structures: the incoming data from Flickr:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type ImageData struct {
-	Id     string `json:&amp;quot;id&amp;quot;`
-	Secret string `json:&amp;quot;secret&amp;quot;`
-	Server string `json:&amp;quot;server&amp;quot;`
-	Title  string `json:&amp;quot;title&amp;quot;`
-	Farm   int    `json:&amp;quot;farm&amp;quot;`
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The outgoing response given to &lt;em&gt;my&lt;/em&gt; client:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type ImageResponse struct {
-	Uri       string `json:&amp;quot;uri&amp;quot;`
-	Thumbnail string `json:&amp;quot;thumbnail&amp;quot;`
-	Text      string `json:&amp;quot;text&amp;quot;`
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And the outgoing response for a &amp;ldquo;latest search&amp;rdquo; request:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type Search struct {
-	Term string `json:&amp;quot;term&amp;quot;`
-	When string `json:&amp;quot;when&amp;quot;`
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Only &lt;code&gt;ImageResponse&lt;/code&gt; truly needed a dedicated constructor, mostly to run through the URL construction hoops, but this got a bit wordy, especially once accomodating the need for array structures and functions to prettily print all of this. The entire thing could do with a decent refactor, since I&amp;rsquo;m fairly sure my &lt;code&gt;String() string&lt;/code&gt; function is exactly the same for each structure.&lt;/p&gt;
-
-&lt;h3 id=&#34;it-s-the-latest-show&#34;&gt;It&amp;rsquo;s the Latest Show!&lt;/h3&gt;
-
-&lt;p&gt;&amp;ldquo;Show the 10 most recent image searches&amp;rdquo; doesn&amp;rsquo;t seem like the kind of user story that really needs true data persistence, so I decided to just hold search history in a simple array that cuts off the oldest entry when it exceeds 10 entries.&lt;/p&gt;
-
-&lt;p&gt;This worked out just fine but is also when Heroku&amp;rsquo;s free tier really bit me too (I sense a pattern), since when Heroku sends the application to sleep, it flushes the memory. Any request sent to the server wakes it, but this effectively means that the search history is limited to the latest session.&lt;/p&gt;
-
-&lt;p&gt;Of course this could be avoided by paying $7/month to run this service non-stop, but I&amp;rsquo;m not there yet.&lt;/p&gt;
-
-&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;some serious refactoring to remove code duplication should/could be done&lt;/li&gt;
-&lt;li&gt;added parameters along with &amp;ldquo;offset&amp;rdquo; would be pretty easy to implement, perhaps one that sets the size of the thumbnail?&lt;/li&gt;
-&lt;li&gt;the original demo had a &amp;ldquo;context&amp;rdquo; field, although it wasn&amp;rsquo;t listed as a user story. Could I return something sensible in this case anyway? The owner of the picture&amp;rsquo;s profile?&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <description>Fresh Links  Deployed App GitHub repo  My Kingdom for an API (that works!) By far the most complicated thing about this project was finding the right API to work with. Historical reading indicated that Google&amp;rsquo;s Image Search API had once been fairly open, but do they even pretend that their motto is &amp;ldquo;Don&amp;rsquo;t be evil&amp;rdquo; these days?
+Imgur seemed a likely candidate, but unfortunately there seemed to be no easy way to request non-album images, and no easy way to extract a direct link to the image contained in an album, and therefore no way to build thumbnail links.</description>
     </item>
     
     <item>
@@ -565,102 +90,8 @@ https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|pn
       <pubDate>Thu, 04 May 2017 14:51:44 +0700</pubDate>
       
       <guid>http://frenata.me/blog/speedrun-shortener/</guid>
-      <description>
-
-&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/tiny/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/tiny&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;one-repo-to-rule-them-all&#34;&gt;One Repo to Rule Them All&lt;/h3&gt;
-
-&lt;p&gt;I spent a good deal of time before/during/after writing the URL shortener itself on infrastructure, so it seems reasonable to discuss it here. Working with subtrees and orphaned branches was a bit annoying on my previous speedrun attempts, and since the &lt;em&gt;final&lt;/em&gt; objective was to unite all the projects together anyway&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;I decided to do it early.&lt;/p&gt;
-
-&lt;p&gt;First, I got my heroku account verified and my own domain name pointing to one of my projects there.&lt;/p&gt;
-
-&lt;p&gt;Then I set up a new git repo, and merged the previous two orphaned branches into it.&lt;/p&gt;
-
-&lt;p&gt;Then I reorganized my existing code into packages, a &lt;code&gt;main&lt;/code&gt; package with that distributed routes to other packages, each of which would handle its own microservice. Here&amp;rsquo;s what my new main function looks like:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func main() {
-	// get bound port of host system
-	port := os.Getenv(&amp;quot;PORT&amp;quot;)
-
-	http.HandleFunc(&amp;quot;/&amp;quot;, index)
-	http.HandleFunc(timestamp.ROUTE, timestamp.Handler)
-	http.HandleFunc(headers.ROUTE, headers.Handler)
-	http.HandleFunc(tiny.ROUTE, tiny.Handler)
-	log.Fatal(http.ListenAndServe(&amp;quot;:&amp;quot;+port, nil))
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Simple and sweet, all the logic internal to the services is contained in those services, including the routes they should be served on!&lt;/p&gt;
-
-&lt;h3 id=&#34;persistence-pays&#34;&gt;Persistence Pays&lt;/h3&gt;
-
-&lt;p&gt;I knew that a critical question was data persistence, and I also knew that I wanted to do this with a minimum of fuss, as befits a &amp;ldquo;speed run,&amp;rdquo; so I decided not to skip using a database&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;But since heroku pulls things down after inactivity on the free tier, I needed at least some kind of persistence, or the generated short addresses would likely only last as long as a dyno was active. So I decided to do the simplest possible thing, and just write to a file. This would almost certainly be a &lt;em&gt;terrible&lt;/em&gt; idea in any kind of production server due to a variety of threading issues, but I determined that it was acceptable for what I viewed as a proof of concept.&lt;/p&gt;
-
-&lt;p&gt;For doing this write I used the following function:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func writeDB(sr ShortenerResponse) {
-	f, err := os.OpenFile(DB, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	data, _ := json.Marshal(sr)
-	if _, err = f.Write(append(data, &#39;\n&#39;)); err != nil {
-		panic(err)
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In short, this opens a file in &amp;ldquo;append&amp;rdquo; mode, creating it if it doesn&amp;rsquo;t already exist, and writes a JSON object to the file, being sure to close this file before the function ends (the purpose of &lt;code&gt;defer f.Close()&lt;/code&gt;).&lt;/p&gt;
-
-&lt;p&gt;Another function &lt;code&gt;init&lt;/code&gt;, which in go runs only when the package is first loaded, reads from this same file (if it exists) and loads the contents into memory.&lt;/p&gt;
-
-&lt;h3 id=&#34;map-the-world&#34;&gt;Map the World!&lt;/h3&gt;
-
-&lt;p&gt;The objects themselves were built from a now familiar go &lt;code&gt;struct&lt;/code&gt; with JSON tags:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type ShortenerResponse struct {
-	Original *string `json:&amp;quot;original_url&amp;quot;`
-	Short    *string `json:&amp;quot;short_url&amp;quot;`
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This data structure is essentially only used when marshaling to JSON for the response to a client, or for unmarshalling the contents of my &amp;ldquo;database file&amp;rdquo;.&lt;/p&gt;
-
-&lt;p&gt;For actually doing the work of redirect on demand, I used a map, that takes &lt;code&gt;string&lt;/code&gt;s and translates them directly into other &lt;code&gt;string&lt;/code&gt;s. In short: a requested short URL redirects to the long URL without bothering to iterate over anything.&lt;/p&gt;
-
-&lt;h3 id=&#34;what-happens&#34;&gt;What Happens?&lt;/h3&gt;
-
-&lt;ol&gt;
-&lt;li&gt;a request is routed to the handler function&lt;/li&gt;
-&lt;li&gt;the handler checks the map of URLs, and if a match is found, it just redirects to the long URL&lt;/li&gt;
-&lt;li&gt;or it calls &lt;code&gt;Shorten&lt;/code&gt; with the URL&lt;/li&gt;
-&lt;li&gt;this function verifies that the URL is valid and sends an error response if it is not&lt;/li&gt;
-&lt;li&gt;or it calls &lt;code&gt;NewResponse&lt;/code&gt; which builds a response, adds an entry in the map, and returns the Response to &lt;code&gt;Shorten&lt;/code&gt;&amp;hellip;&lt;/li&gt;
-&lt;li&gt;which writes the new Response to the DB&amp;hellip;&lt;/li&gt;
-&lt;li&gt;and returns the JSON representation of it to the handler&amp;hellip;&lt;/li&gt;
-&lt;li&gt;which returns it to the user.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;use a proper database, even just SQLite, instead of a flat file&lt;/li&gt;
-&lt;li&gt;use a better hashing function from long URLs to short URLs, and check for collisions&lt;/li&gt;
-&lt;li&gt;do something to better accomodate thread/process scaling, probably running a separate goroutine to issue writes to the DB/map, using channels&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <description>Fresh Links  Deployed App GitHub repo  One Repo to Rule Them All I spent a good deal of time before/during/after writing the URL shortener itself on infrastructure, so it seems reasonable to discuss it here. Working with subtrees and orphaned branches was a bit annoying on my previous speedrun attempts, and since the final objective was to unite all the projects together anyway&amp;hellip;
+I decided to do it early.</description>
     </item>
     
     <item>
@@ -669,40 +100,8 @@ https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|pn
       <pubDate>Sun, 23 Apr 2017 10:09:32 +0700</pubDate>
       
       <guid>http://frenata.me/blog/recurse/</guid>
-      <description>
-
-&lt;p&gt;I was accepted to the &lt;a href=&#34;https://www.recurse.com/&#34;&gt;Recurse Center&lt;/a&gt; a few days ago, and in the spirit of self-reflection decided to write up a little about my experiences. Since I intend to write up my experience of &lt;em&gt;being&lt;/em&gt; there as well, it&amp;rsquo;s also just good practice.&lt;/p&gt;
-
-&lt;h3 id=&#34;what-is-rc&#34;&gt;What is RC?&lt;/h3&gt;
-
-&lt;p&gt;That turns out to a bit hard to explain, and since I haven&amp;rsquo;t yet been I&amp;rsquo;m not well positioned to even try. I&amp;rsquo;ll let an alumni &lt;a href=&#34;http://aliza.aufri.ch/tig/35-recurse-center-is-like-studying-abroad&#34;&gt;give it a shot&lt;/a&gt; though! Suffice to say that it is sort of structured like a bootcamp but also not at all structured like a bootcamp.&lt;/p&gt;
-
-&lt;p&gt;I first found out about the existence of such a thing from a &lt;a href=&#34;http://jvns.ca/blog/2013/12/04/day-37-how-a-keyboard-works/&#34;&gt;blog post&lt;/a&gt;. The author is exhuberant that a &lt;strong&gt;custom&lt;/strong&gt; operating system she built &amp;ldquo;doesn&amp;rsquo;t crash&amp;rdquo; when she presses any key. The sheer scope of such a project amazed me, and the celebration of small victories was infectious. I started picking through the rest of the blog&amp;rsquo;s archives to try to find out what this incredible place she worked on this was.&lt;/p&gt;
-
-&lt;h3 id=&#34;following-the-white-rabbit&#34;&gt;Following the White Rabbit&lt;/h3&gt;
-
-&lt;p&gt;I read a little about RC from their own website. It was interesting, like nothing I&amp;rsquo;d ever considered before. I talked in very general terms about it with my family&amp;hellip;  I soon found myself captivated by the notion that I could get &amp;ldquo;dramatically better&amp;rdquo; at programming while in the company of incredibly smart and highly motivated people.&lt;/p&gt;
-
-&lt;p&gt;I read more and thought more. Was it rational to try to go to NYC for three months, just for this? RC seemed to have a really good track record on jobs-placement, but I was pretty confident I could land something satisfactory anyway. Was I ready to go back to the USA at all?&lt;/p&gt;
-
-&lt;h3 id=&#34;why-not&#34;&gt;Why Not?&lt;/h3&gt;
-
-&lt;p&gt;Without having high expectations (imposter syndrome?), I decided to apply anyway. The written application wasn&amp;rsquo;t particularly long, so I had little to lose.&lt;/p&gt;
-
-&lt;p&gt;I didn&amp;rsquo;t anticipate losing sleep over it.&lt;/p&gt;
-
-&lt;p&gt;The first interview was exactly what their documentation said it was: a conversation. We talked about my background, life at RC, and the &lt;a href=&#34;https://gist.github.com/frenata/1e4fa63ac2a4a1bfea36ab4692c2326f&#34;&gt;code sample&lt;/a&gt; I&amp;rsquo;d sent them, from last year&amp;rsquo;s &lt;a href=&#34;https://adventofcode.com/&#34;&gt;Advent of Code&lt;/a&gt;. My interviewer had written a bit of Go, but I got to explain channels, which was pretty exciting.&lt;/p&gt;
-
-&lt;p&gt;The second interview was effectively a 30 minute Pair Programming session, starting from a small &lt;a href=&#34;https://gist.github.com/frenata/27258e7508edfd2b88d97efce0fa6c94/1507274cabf2648474b9303e3d9567f4b87ef05e&#34;&gt;lisp parser&lt;/a&gt; I&amp;rsquo;d also written in Go. Together we added an interpreter for the parsed lisps that could evaluate nested addition, like so: &lt;code&gt;(+ 1 (+ 3 4))&lt;/code&gt; == &lt;code&gt;8&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;After three rounds I was confident but reserved. I knew that everything I&amp;rsquo;d read indicated that RC was a good fit, but had I adequately communicated this fit?&lt;/p&gt;
-
-&lt;h3 id=&#34;and-then&#34;&gt;And Then?&lt;/h3&gt;
-
-&lt;p&gt;And then I recieved a beatiful email inviting me to join!&lt;/p&gt;
-
-&lt;p&gt;Somewhat sadly I still need to put off proceeding to pick my batch, since my summer plans are still &lt;code&gt;undefined&lt;/code&gt;. But to NYC I will go sometime this year, in the hopes to improve my craft and meet others doing the same thing.&lt;/p&gt;
-</description>
+      <description>I was accepted to the Recurse Center a few days ago, and in the spirit of self-reflection decided to write up a little about my experiences. Since I intend to write up my experience of being there as well, it&amp;rsquo;s also just good practice.
+What is RC? That turns out to a bit hard to explain, and since I haven&amp;rsquo;t yet been I&amp;rsquo;m not well positioned to even try. I&amp;rsquo;ll let an alumni give it a shot though!</description>
     </item>
     
     <item>
@@ -711,63 +110,8 @@ https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|pn
       <pubDate>Fri, 21 Apr 2017 17:17:53 +0700</pubDate>
       
       <guid>http://frenata.me/blog/speedrun-request-headers/</guid>
-      <description>
-
-&lt;h3 id=&#34;fresh-links&#34;&gt;Fresh Links&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/headers/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/headers&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;wherefore-art-thou-x-forwarded-for&#34;&gt;Wherefore art thou X-Forwarded-For?&lt;/h3&gt;
-
-&lt;p&gt;Apparently the client IP can be sent several different ways, so it was necessary to check various headers. Also along these lines, none of these headers are sent when browsing locally via &lt;code&gt;heroku local&lt;/code&gt;, meaning the only way I could test that this was working properly was &amp;ldquo;in production.&amp;rdquo; Decidedly not ideal.&lt;/p&gt;
-
-&lt;p&gt;Here&amp;rsquo;s the full text of my function to fetch the IP address:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func getIP(headers http.Header) *string {
-	possibleKeys := []string{
-		&amp;quot;Remote_Addr&amp;quot;,
-		&amp;quot;Client-IP&amp;quot;,
-		&amp;quot;X-Forwarded-For&amp;quot;,
-	}
-
-	for _, key := range possibleKeys {
-		if ip := headers.Get(key); ip != &amp;quot;&amp;quot; {
-			comma := strings.Index(ip, &amp;quot;,&amp;quot;)
-			if comma != -1 {
-				ip = ip[:comma]
-			}
-			return &amp;amp;ip
-		}
-	}
-
-	return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Given a HTTP header object, this will check the various possible keys, returning the value if the header ccontains that key. There&amp;rsquo;s also a small check for a comma that will ensure only &lt;em&gt;1&lt;/em&gt; address is returned.&lt;/p&gt;
-
-&lt;h3 id=&#34;yes-i-m-pointing-at-you&#34;&gt;Yes, I&amp;rsquo;m Pointing at You&lt;/h3&gt;
-
-&lt;p&gt;Of some note is that this function returns &lt;code&gt;*string&lt;/code&gt; rather than &lt;code&gt;string&lt;/code&gt;. That is, it returns a &lt;em&gt;pointer&lt;/em&gt; to a string rather than a string. This is also why &lt;code&gt;return &amp;amp;ip&lt;/code&gt; is written the way it is. It returns not the string value contained in &lt;code&gt;ip&lt;/code&gt; but the address where this value is stored.&lt;/p&gt;
-
-&lt;p&gt;The reason for this is so that if the IP is not found for some reason, this function can return &lt;code&gt;nil&lt;/code&gt; (aka &lt;code&gt;null&lt;/code&gt;) rather than some specific string value. My Response object accordingly holds &lt;em&gt;pointers&lt;/em&gt; to strings, and when it is &lt;code&gt;Marshal&lt;/code&gt;ed into JSON a &lt;code&gt;nil&lt;/code&gt; value in the IP field will be correctly returned as &lt;code&gt;&amp;quot;ipaddress&amp;quot;: null&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h3 id=&#34;requirement-clarity&#34;&gt;Requirement: Clarity&lt;/h3&gt;
-
-&lt;p&gt;It wasn&amp;rsquo;t entirely clear, from the user stories given, exactly what &amp;ldquo;operating system&amp;rdquo; data is desired. I made a choice based on the structure of the &lt;code&gt;User-Agent&lt;/code&gt; header, but it could be different. The same is true for my choice to strip out extra IP addresses.&lt;/p&gt;
-
-&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Find a way to test client IP when working with a local deployment.&lt;/li&gt;
-&lt;li&gt;Possible: display the name of a language instead of a locale string. ie, &amp;ldquo;English&amp;rdquo; instead of &amp;ldquo;en-US&amp;rdquo;.&lt;/li&gt;
-&lt;li&gt;Add other interesting headers to the JSON response.&lt;/li&gt;
-&lt;li&gt;Add some unit tests, by manually constructing an HTTP header and ensuring that the returned values are accurate.&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <description>Fresh Links  Deployed App GitHub repo  Wherefore art thou X-Forwarded-For? Apparently the client IP can be sent several different ways, so it was necessary to check various headers. Also along these lines, none of these headers are sent when browsing locally via heroku local, meaning the only way I could test that this was working properly was &amp;ldquo;in production.&amp;rdquo; Decidedly not ideal.
+Here&amp;rsquo;s the full text of my function to fetch the IP address:</description>
     </item>
     
     <item>
@@ -776,81 +120,8 @@ https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|pn
       <pubDate>Thu, 20 Apr 2017 22:37:08 +0700</pubDate>
       
       <guid>http://frenata.me/blog/speedrun-timestamp/</guid>
-      <description>
-
-&lt;h3 id=&#34;why-go&#34;&gt;Why Go?&lt;/h3&gt;
-
-&lt;p&gt;Because I like it, that&amp;rsquo;s why! And it&amp;rsquo;s pragmatic but one-way-to-do-it spirit fits my personality. After spending months with Java for school it is an absolute joy to work with. I&amp;rsquo;ll touch on some of the more interesting things I encountered while working on the project. The details are in the source of course, which I worked hard to keep readable and annotated.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://api.frenata.net/timestamp/&#34;&gt;Deployed App&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/frenata/api-frenata/tree/master/src/timestamp&#34;&gt;GitHub repo&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;heroku&#34;&gt;Heroku&lt;/h3&gt;
-
-&lt;p&gt;I had not used Heroku previously, so I spent quite a bit of time just getting started with it. Fortuanely, while not as easy to work with as &lt;a href=&#34;http://surge.sh&#34;&gt;surge.sh&lt;/a&gt; I didn&amp;rsquo;t find it too difficult to get going with. But there were a few snags. Go tooling aside, it wasn&amp;rsquo;t quite as simple as pointing heroku at a binary, but in the end, it wasn&amp;rsquo;t much different than that either.&lt;/p&gt;
-
-&lt;p&gt;There were a few different ways to signal to Heroku that the deployed app is written in Go, but I found the simplest, especially since I didn&amp;rsquo;t plan on using anything other than the standard library, was to use &lt;code&gt;gb&lt;/code&gt;. The instructions for doing so, summarized:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;create a &lt;code&gt;src&lt;/code&gt; directory at your project root&lt;/li&gt;
-&lt;li&gt;write some &lt;code&gt;.go&lt;/code&gt; files inside &lt;code&gt;src&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;at least one of which should compile into a binary, let&amp;rsquo;s call it &lt;code&gt;foo&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;create a file called &lt;code&gt;Procfile&lt;/code&gt; in the project root that says: &lt;code&gt;web: foo&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;And that&amp;rsquo;s it!&lt;/p&gt;
-
-&lt;h3 id=&#34;serving-millions&#34;&gt;Serving Millions&lt;/h3&gt;
-
-&lt;p&gt;Serving http is dead simple with Go, here is the entirety of a working webserver function:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func main() {
-	port := os.Getenv(&amp;quot;PORT&amp;quot;)
-	
-	http.HandleFunc(&amp;quot;/&amp;quot;, timestamp) 
-	http.ListenAndServe(&amp;quot;:&amp;quot;+port, nil)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Grabbing the port from the environment was another snag I ran into. You won&amp;rsquo;t know what port your particular app is being served from, so it needs to be grabbed dynamically. &lt;code&gt;timestamp&lt;/code&gt; in the above code is the name of a function that does the work of reading requests and writing responses. Originally all my logic was in this function, but I later refactored it away so that &lt;code&gt;timestamp&lt;/code&gt; is only concerned with http and any business logic is handled elsewhere.&lt;/p&gt;
-
-&lt;h3 id=&#34;jason-and-the-argonauts&#34;&gt;Jason and the Argonauts&lt;/h3&gt;
-
-&lt;p&gt;Go also has some pleasant tools to work with JSON. I defined a concrete type to hold the data:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type TimeResponse struct {
-	Unix    *string `json:&amp;quot;unix&amp;quot;`
-	Natural *string `json:&amp;quot;natural&amp;quot;`
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Converting a value of this type to JSON notation can be performed with &lt;code&gt;json.MarshalIndent(someResponseValue, &amp;quot;&amp;quot;, &amp;quot;    &amp;quot;)&lt;/code&gt; &lt;code&gt;json.Marshal&lt;/code&gt; would do the same thing without the extra arguments and thus no pretty printing.&lt;/p&gt;
-
-&lt;h3 id=&#34;time-flies-when-you-re-coding&#34;&gt;Time Flies When You&amp;rsquo;re Coding&lt;/h3&gt;
-
-&lt;p&gt;Go has a bit of unique way to represent time formats (any string representation of a certain fixed date), but I took advantage of the relative ease of defining them to extend the user story beyond the requirements, allowing a great variety of date formats to be parsed correctly. &lt;code&gt;https://timestamp-go.herokuapp.com/12/25/2017/&lt;/code&gt; was particularly fun to get working. Great apologies to the rest of the world, but I choose the American way to parse that style of date.&lt;/p&gt;
-
-&lt;h3 id=&#34;room-for-improvement&#34;&gt;Room for Improvement&lt;/h3&gt;
-
-&lt;p&gt;How could this particular project be improved?&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;The instructions page is pure text, so even a little html and css would make it more pleasant to read.&lt;/li&gt;
-&lt;li&gt;More time formats!&lt;/li&gt;
-&lt;li&gt;Optional query string to request a certain format of natural date/time.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;gitter-done&#34;&gt;Gitter Done&lt;/h3&gt;
-
-&lt;p&gt;A brief technical note, for myself as much as anything, since I&amp;rsquo;m holding the code for this in my overarching fcc repo, I used a git subtree to push just the relevant code to a branch. Heroku is configured to do automatic deployments from this branch. The incantation is:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git subtree push --prefix timestamp/go/ origin timestamp-go
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This &lt;em&gt;must&lt;/em&gt; be performed in the repo root, but will push only a specific directory &lt;code&gt;timestamp/go/&lt;/code&gt; to a specific branch &lt;code&gt;timestamp-go&lt;/code&gt;.&lt;/p&gt;
-</description>
+      <description>Why Go? Because I like it, that&amp;rsquo;s why! And it&amp;rsquo;s pragmatic but one-way-to-do-it spirit fits my personality. After spending months with Java for school it is an absolute joy to work with. I&amp;rsquo;ll touch on some of the more interesting things I encountered while working on the project. The details are in the source of course, which I worked hard to keep readable and annotated.
+ Deployed App GitHub repo  Heroku I had not used Heroku previously, so I spent quite a bit of time just getting started with it.</description>
     </item>
     
     <item>
@@ -859,78 +130,8 @@ https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|pn
       <pubDate>Thu, 20 Apr 2017 20:37:08 +0700</pubDate>
       
       <guid>http://frenata.me/blog/android-architecture-3/</guid>
-      <description>
-
-&lt;h3 id=&#34;previously&#34;&gt;Previously&lt;/h3&gt;
-
-&lt;p&gt;After implementing a &lt;a href=&#34;../android-architecture-1&#34;&gt;class hierarchy&lt;/a&gt; and a unified point of database access via a &lt;a href=&#34;../android-architecture-2&#34;&gt;Content Provider&lt;/a&gt; the core mechanisms of my app were in place: the ability to do basic CRUD (Create, Retrieve, Update, Delete) actions on the various types in my database. It was time to put the finishing touches, not all of which were trivial.&lt;/p&gt;
-
-&lt;h3 id=&#34;time-keeps-ticking&#34;&gt;Time Keeps Ticking&amp;hellip;&lt;/h3&gt;
-
-&lt;p&gt;The first major task was to enable the user to create notifications for the various data types, most of which had date fields attached. However, in order to get the database functionality working, I had skipped any attempt at verifying user entered dates, which were stored in the SQLite database as plain strings. While a well intentioned user would no doubt enter real dates instead of &lt;code&gt;&amp;quot;next week&amp;quot;&lt;/code&gt;, it didn&amp;rsquo;t seem right to cause notifications to fail for incorrectly written dates, either silently or explicitly.&lt;/p&gt;
-
-&lt;p&gt;Related was the question of the order of items on the lists of terms/courses/assessments. Keeping with &amp;ldquo;getting it done&amp;rdquo; I had sorted them simply by the name of the entry, knowing I would eventually want to &amp;ldquo;do it right&amp;rdquo;. That &lt;em&gt;time&lt;/em&gt; was of course now.&lt;/p&gt;
-
-&lt;p&gt;First I enforced that user entered dates be in a specific format, &lt;code&gt;23 April 2017&lt;/code&gt;. But while simple to enter by text and obvious to read, this type of data is not easily sortable. I needed to translate dates into something more like a timestamp for storage in the SQLite database. Thus was a class born &lt;code&gt;DateFormatter&lt;/code&gt;, which contained several static helper methods to translate dates from my chosen human readable format, to a timestamp, and back again. I would also add methods to translate dates into Unix epoch timestamps, since this is how I would schedule notifications.&lt;/p&gt;
-
-&lt;h3 id=&#34;notify-me&#34;&gt;Notify Me&lt;/h3&gt;
-
-&lt;p&gt;Actually getting notifications working wasn&amp;rsquo;t entirely trivial either, but not from a coding standpoint. This was the first time I ran into the stumbling block of the Internet: host to information about many different ways of working with Android apps, all from different APIs and few marked clearly.&lt;/p&gt;
-
-&lt;p&gt;I pressed on, found a strategy that worked and implemented it. Testing it consisted of forcing the menu items to schedule notifications not on the date specified, but some fixed amount of time, say 5 seconds, after &lt;code&gt;SystemClock.elapsedRealtime()&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h3 id=&#34;worth-a-thousand-sloc&#34;&gt;Worth a Thousand SLOC&lt;/h3&gt;
-
-&lt;p&gt;Next up was attaching camera photos to notes. I had kept putting this off because it felt like it would be complicated, but truly Android makes the simple things complicated and the complicated things simple. The actual code to call out to the camera to take a picture?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public void takePicture(View view) {
-	Intent takePictureIntent = 
-		new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-	if (takePictureIntent.resolveActivity(
-				getPackageManager()) != null) {
-		startActivityForResult(
-				takePictureIntent, 
-				REQUEST_IMAGE_CAPTURE);
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Taking the image and forcing it into and out of the database was somewhat more involved, but not very. SQL has a datatype &lt;code&gt;blob&lt;/code&gt; for a reason. (Though &lt;em&gt;better&lt;/em&gt; practice would probably have been to save a URI for the photo)&lt;/p&gt;
-
-&lt;p&gt;SMS was scarely more complicated:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;private void sendSMS() {
-	Uri uri = Uri.parse(&amp;quot;content://contacts&amp;quot;);
-	Intent intent = new Intent(Intent.ACTION_PICK, uri);
-	intent.setType(
-			ContactsContract.
-			CommonDataKinds.
-			Phone.CONTENT_TYPE);
-	startActivityForResult(intent, 1);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;minor-minor-minor&#34;&gt;Minor Minor Minor&lt;/h3&gt;
-
-&lt;p&gt;There were a few other minor details to fulfill various requirements or my own sense of pride:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;finding something semi-reasonable to store not in the SQLite database, but with SharedPrefs&lt;/li&gt;
-&lt;li&gt;making sure that somewhere I was using an &lt;code&gt;ArrayList&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;fixing a nagging &lt;code&gt;InternalException&lt;/code&gt; that had not disrupted anything but been hitting the logs since the beginning of the project&lt;/li&gt;
-&lt;li&gt;validating deletion of database items to prevent orphaned data&lt;/li&gt;
-&lt;li&gt;adding a wider selection of sample data&lt;/li&gt;
-&lt;li&gt;icons&lt;/li&gt;
-&lt;li&gt;reducing some layout duplication&lt;/li&gt;
-&lt;li&gt;refactoring the massive amount of duplicated code in the &lt;code&gt;ContentProvider&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;wrapping-it-up-in-an-apk&#34;&gt;Wrapping it up in an APK&lt;/h3&gt;
-
-&lt;p&gt;Ultimately I learned a lot, including that working with XML is not my idea of fun and that mobile app development might not be either. You can certainly develop something rapidly if you know what you&amp;rsquo;re doing, but boilerplate is everywhere. Android Studio seems almost a necessity, just to keep track of the massive Android library. Discerning which information is from too far in the past to be of use, which information is for an API too far in the future to be of use, and which information is just right is a massive pain.&lt;/p&gt;
-
-&lt;p&gt;Making it all look good is certainly not as easy as it looks. It may be some time before I revisit Android development, but I&amp;rsquo;m glad I was pushed to do it.&lt;/p&gt;
-</description>
+      <description>Previously After implementing a class hierarchy and a unified point of database access via a Content Provider the core mechanisms of my app were in place: the ability to do basic CRUD (Create, Retrieve, Update, Delete) actions on the various types in my database. It was time to put the finishing touches, not all of which were trivial.
+Time Keeps Ticking&amp;hellip; The first major task was to enable the user to create notifications for the various data types, most of which had date fields attached.</description>
     </item>
     
     <item>
@@ -939,51 +140,8 @@ https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|pn
       <pubDate>Mon, 17 Apr 2017 14:07:20 +0700</pubDate>
       
       <guid>http://frenata.me/blog/android-architecture-2/</guid>
-      <description>&lt;p&gt;After bulding the basics of my &lt;a href=&#34;../android-architecture-1&#34;&gt;android app&lt;/a&gt;, I had a simple app that could display/edit lists of school terms. The problem? The requirements specified that the app have terms, courses associated with each term, assessments associated with each course, and notes associated with each course &lt;em&gt;or&lt;/em&gt; assessment.&lt;/p&gt;
-
-&lt;p&gt;That was fine, after all I was armed with all kinds of SQL database design knowledge after 3 courses at WGU, so I rapidly stubbed out java classes for each of these entities. Each relationship was a simple many-to-one relationship, so &lt;code&gt;Course&lt;/code&gt; table needed to maintain a foreign key pointing to the associated &lt;code&gt;Term&lt;/code&gt;, the &lt;code&gt;Assessment&lt;/code&gt; table needed to maintain a foreign key pointing to the associated &lt;code&gt;Course&lt;/code&gt;, and so on.&lt;/p&gt;
-
-&lt;p&gt;Each class handled it&amp;rsquo;s own table definition rules, and my &lt;code&gt;DBHelper&lt;/code&gt; class now opened the database, then when needing to create or upgrade, called methods from each entitiy class to create each table. Add some sample data in my main activity&amp;rsquo;s &lt;code&gt;onCreate&lt;/code&gt; method, and&amp;hellip; &lt;code&gt;Exceptions: table course does not exist&lt;/code&gt;. Since the database already existed and I hadn&amp;rsquo;t incremented the verison number, rerunning my app and calling more table creation methods did nothing. My very hacky fix was to uninstall the app and then reload it onto the emulator, although I just now realized that a more sensible idea would have been to create a simple method in the &lt;code&gt;DBHelper&lt;/code&gt; to drop all the tables and delete the database, then tie this to a menu action. Lesson learned.&lt;/p&gt;
-
-&lt;p&gt;My database redefined, I turned to listing all the courses. And ran into the &lt;code&gt;ContentProvider&lt;/code&gt;, which in its &lt;code&gt;insert&lt;/code&gt;, &lt;code&gt;update&lt;/code&gt;, and &lt;code&gt;delete&lt;/code&gt; methods was referring directly to the &lt;code&gt;Term&lt;/code&gt; class. Did I need separate providers for each table? That didn&amp;rsquo;t seem right.&lt;/p&gt;
-
-&lt;p&gt;After chewing on the problem for a while (and sleeping on it, which always helps me), I settled on the pattern explained in &lt;a href=&#34;http://stackoverflow.com/questions/3814005/best-practices-for-exposing-multiple-tables-using-content-providers-in-android&#34;&gt;this stackoverflow post&lt;/a&gt;. I didn&amp;rsquo;t realize it at the time, but this style is used internally by android as well. An example, from my finished ContentProvider:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@Override
-public int update(
-		Uri uri, 
-		ContentValues values, 
-		String selection, 
-		String[] selectionArgs) {
-
-	String table;
-
-	switch (uriMatcher.match(uri)) {
-		case TERMS:
-			table = Term.TABLE; break;
-		case COURSES:
-			table = Course.TABLE; break;
-		case ASSESSMENTS:
-			table = Assessment.TABLE; break;
-		case COURSE_NOTES:
-			table = CourseNote.TABLE; break;
-		case ASSESSMENT_NOTES:
-			table = AssessmentNote.TABLE; break;
-		default:
-			table = &amp;quot;&amp;quot;; break;
-	}
-	return !table.isEmpty() ?
-		database.update(table,
-				values,
-				selection,
-				selectionArgs) : 0;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This general pattern proved hugely useful, so that the &lt;code&gt;ContentProvider&lt;/code&gt; handled most aspects of interacting with the database correctly, so long as it was given the proper URI, which are defined as public constants in the &lt;code&gt;ContentProvider&lt;/code&gt; itself. Because it was also necessary for courses to understand what term they were in and build the appropriate WHERE clause, the classes are sadly fairly coupled together, but having the &lt;code&gt;ContentProvider&lt;/code&gt; handle most aspects of DB interaction is a step in the right direction. Further refactoring could likely reduce coupling throughout the codebase.&lt;/p&gt;
-
-&lt;p&gt;From this point on, I implemented the entire database structure as specified by the requirements, absent pictures in notes, which I decided to save for another day.&lt;/p&gt;
-</description>
+      <description>After bulding the basics of my android app, I had a simple app that could display/edit lists of school terms. The problem? The requirements specified that the app have terms, courses associated with each term, assessments associated with each course, and notes associated with each course or assessment.
+That was fine, after all I was armed with all kinds of SQL database design knowledge after 3 courses at WGU, so I rapidly stubbed out java classes for each of these entities.</description>
     </item>
     
     <item>
@@ -992,54 +150,96 @@ public int update(
       <pubDate>Sat, 15 Apr 2017 21:39:47 +0700</pubDate>
       
       <guid>http://frenata.me/blog/android-architecture-1/</guid>
-      <description>&lt;p&gt;Frustrated by communication issues while working on my WGU capstone/thesis, I recently turned to the only other class I have left: Mobile Application Development. I was fairly excited by this (I get to build Android apps!), but the reality of the class was somewhat intimidating. There is no objective assessment, only a performance assessment that involves building an actual app. Fine. But provided materials are&amp;hellip;minimal. No problem, I thought, since android development is so popular there should be plenty of information freely available on the web!&lt;/p&gt;
-
-&lt;p&gt;While my original plan was to work through some of Udacity&amp;rsquo;s free material on Android, then to launch into the class project, I realized that the time left in my term was quickly running out. Not having time to learn it &amp;ldquo;the right way&amp;rdquo;, I resolved to &amp;ldquo;fake it until I made it,&amp;rdquo; passing the class, and revisiting android development proper when my time permits. My first step was to follow a tutorial to build a working app along similar lines to what I needed to eventually build. I pulled from two tutorials to get the basics rolling:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Lynda&amp;rsquo;s &lt;a href=&#34;https://www.lynda.com/Android-tutorials/Building-Note-Taking-App-Android/377485-2.html&#34;&gt;Note-Taking App&lt;/a&gt; video tutorial, which was specifically linked on the WGU course page&lt;/li&gt;
-&lt;li&gt;Vogella&amp;rsquo;s &lt;a href=&#34;http://www.vogella.com/tutorials/AndroidSQLite/article.html&#34;&gt;Android SQLite database tutorial&lt;/a&gt;, which is just text and lots of code samples, covering a variety of ways to interact with a SQLite database in Android&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;I primarily followed the Lynda tutorials, adjusting and learning as I went. For instance, that tutorial uses a very simple DB table with just two columns: the text of the note and the id (primary key) of the note. For even the simplest of my tables I needed to store at least 4 pieces of information: a term title, start and end dates, and the id. Thus my app quickly diverged from the tutorial, with multiple relevant fields complicating the layout files. To list data, android provides some basic list layouts, but they hold only up to two pieces of info. Since I wanted to dispaly three pieces of information, I had to build my own custom list layout.&lt;/p&gt;
-
-&lt;p&gt;I kept the basic class structure the same, although looking forward somewhat I seperated my &lt;code&gt;TermTable&lt;/code&gt;, representing a single SQL table, from my &lt;code&gt;SchedulerDBHelper&lt;/code&gt;, which opens/creates/upgrades the database itself, and my &lt;code&gt;SchedulerProvider&lt;/code&gt;, which is a ContentProvider to allow &amp;ldquo;easy&amp;rdquo; access to the database. Early on, I also implemented a separate &lt;code&gt;Term&lt;/code&gt; class to handle bundling of the values from the &lt;code&gt;TermTable&lt;/code&gt; table, but I later merged these together into a single class called &lt;code&gt;Term&lt;/code&gt;, to handle all things related to a &amp;ldquo;term&amp;rdquo;.&lt;/p&gt;
-
-&lt;p&gt;From that point on, working through the rest of the tutorials was relatively straightforward, until I had a working app that let me display lists of terms and edit them, all backed by a SQLite database. But of course, this was only the beginning.&lt;/p&gt;
-</description>
+      <description>Frustrated by communication issues while working on my WGU capstone/thesis, I recently turned to the only other class I have left: Mobile Application Development. I was fairly excited by this (I get to build Android apps!), but the reality of the class was somewhat intimidating. There is no objective assessment, only a performance assessment that involves building an actual app. Fine. But provided materials are&amp;hellip;minimal. No problem, I thought, since android development is so popular there should be plenty of information freely available on the web!</description>
     </item>
     
     <item>
       <title>FOSSASIA: Lessons Learned</title>
-      <link>http://frenata.me/blog/Lessons-Learned/</link>
+      <link>http://frenata.me/blog/lessons-learned/</link>
       <pubDate>Fri, 24 Mar 2017 15:05:02 +0700</pubDate>
       
-      <guid>http://frenata.me/blog/Lessons-Learned/</guid>
-      <description>&lt;p&gt;What I learned from volunteering at &lt;a href=&#34;../FOSS-ASIA-2017&#34;&gt;FOSS ASIA&lt;/a&gt;:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Say yes.
-
-&lt;ul&gt;
-&lt;li&gt;If you don&amp;rsquo;t know how to do that thing, be upfront about that lack, ask for advice in how to do it, then say yes anyway&lt;/li&gt;
-&lt;li&gt;But don&amp;rsquo;t wait to be asked, look for a need and try to help fill it.&lt;/li&gt;
-&lt;li&gt;Arriving early never hurts.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;Talk about yourself.
-
-&lt;ul&gt;
-&lt;li&gt;It took me a few days to nail down a &amp;ldquo;here&amp;rsquo;s who I am/what I do/what I&amp;rsquo;m interested in&amp;rdquo; routine.&lt;/li&gt;
-&lt;li&gt;Cards are good if you have them, but so is a well-maintained LinkedIn.&lt;/li&gt;
-&lt;li&gt;Ask good questions about what other people are doing.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;Start conversations.
-
-&lt;ul&gt;
-&lt;li&gt;If the room is full of developers, you&amp;rsquo;re probably far from the only introvert/shy person.&lt;/li&gt;
-&lt;li&gt;Ask around about social gatherings. At least one attendee came to the speaker/team-only event just because she asked about it.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <guid>http://frenata.me/blog/lessons-learned/</guid>
+      <description>What I learned from volunteering at FOSS ASIA:
+ Say yes.  If you don&amp;rsquo;t know how to do that thing, be upfront about that lack, ask for advice in how to do it, then say yes anyway But don&amp;rsquo;t wait to be asked, look for a need and try to help fill it. Arriving early never hurts.  Talk about yourself.  It took me a few days to nail down a &amp;ldquo;here&amp;rsquo;s who I am/what I do/what I&amp;rsquo;m interested in&amp;rdquo; routine.</description>
+    </item>
+    
+    <item>
+      <title>FOSS ASIA 2017</title>
+      <link>http://frenata.me/blog/foss-asia-2017/</link>
+      <pubDate>Fri, 24 Mar 2017 14:58:40 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/foss-asia-2017/</guid>
+      <description>My first conference had gone acceptably well, but I had resolved to be better.
+When the stars aligned and I was able to attend another conference this March, FOSSASIA 2017, I was better. Drawing on yet another tidbit of advice (from where I know not), I decided that rather than just buying a ticket and attending the conference I would volunteer. Ideally this would force me to engage with people rather the particulars of technical talks.</description>
+    </item>
+    
+    <item>
+      <title>My First Conference</title>
+      <link>http://frenata.me/blog/my-first-conference/</link>
+      <pubDate>Fri, 24 Mar 2017 14:56:34 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/my-first-conference/</guid>
+      <description>Last August, at the first technical conference in my rebirthed career as a developer, I spent the entirety of the first day rushing about from session to session, taking notes about interesting ideas and spending most of the elaborate luncheon thinking about which talks I would listen to later that day. But while the tidbits of insight I gained were no doubt highly entertaining at the time, the only thing I can clearly recall 7 months later was a discussion of how Hollywood adapted its view of Computer Security over time.</description>
+    </item>
+    
+    <item>
+      <title>elastic</title>
+      <link>http://frenata.me/blog/elastic/</link>
+      <pubDate>Sat, 04 Feb 2017 15:41:19 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/elastic/</guid>
+      <description>I&amp;rsquo;m diving into learning the Elastic stack: Logstash, Elasticsearch, Kibana. My aim is to use it to enable the local school here to extract useful information from the reams of lesson plan .docs they have laying around. Useless data right now.
+There&amp;rsquo;s a bunch going on, and the actual process I&amp;rsquo;ll need to follow to ETL the data I do have into a usuable state isn&amp;rsquo;t entirely clear to me yet.</description>
+    </item>
+    
+    <item>
+      <title>Hustle</title>
+      <link>http://frenata.me/blog/hustle/</link>
+      <pubDate>Mon, 23 Jan 2017 12:08:06 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/hustle/</guid>
+      <description>After spending what seemed like the entire month of December and about half of January doing nothing but schoolwork, life is calming down. Between me and graduation are only 3 things:
+ the OCP certification test a prescribed Android app project my capstone, essentially this is a senior thesis that will need to heavily emphasize the SDLC  I have plenty of time. So much so that in addition to planning to buck for a capstone excellence award, I have time and energy to devote to other things.</description>
+    </item>
+    
+    <item>
+      <title>the rabbit</title>
+      <link>http://frenata.me/blog/the-rabbit/</link>
+      <pubDate>Tue, 20 Dec 2016 11:10:31 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/the-rabbit/</guid>
+      <description>The goal is to sit and pass CompTIA&amp;rsquo;s Security+ by the end of the week. Scheduling shouldn&amp;rsquo;t be a problem, but I&amp;rsquo;m only halfway through the material an Tuesday morning. I&amp;rsquo;ll need to prove I&amp;rsquo;m ready by the end of Wednesday.
+Away!</description>
+    </item>
+    
+    <item>
+      <title>a day with elixir</title>
+      <link>http://frenata.me/blog/a-day-with-elixir/</link>
+      <pubDate>Sun, 18 Dec 2016 22:42:47 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/a-day-with-elixir/</guid>
+      <description>I&amp;rsquo;ve pushed hard at schoolwork for the past two weeks, and a day of Rest presented itself. No new studies, no reviews, no school.
+But what to do?
+Polyglot that I am, the day&amp;rsquo;s learning was set aside to learn a new language: Elixir. I&amp;rsquo;ve played with some functional languages previously, notably Clojure and Rust, but neither truly caught my heart. Elixir has frequently popped up in comparison to one of my current favorites, Go, which has a somewhat similar concurrency philosophy.</description>
+    </item>
+    
+    <item>
+      <title>in media res</title>
+      <link>http://frenata.me/blog/in-media-res/</link>
+      <pubDate>Thu, 15 Dec 2016 22:06:40 +0700</pubDate>
+      
+      <guid>http://frenata.me/blog/in-media-res/</guid>
+      <description>Less than a month has passed of my second term at WGU, and I&amp;rsquo;m just about done with my enrolled classes for the 6 month term. A couple of database classes are in hand, as is CompTIA&amp;rsquo;s Network+ certification, all that remains officially is a database adminstration class on the hairier parts of SQL.
+Of course I don&amp;rsquo;t plan on stopping there. The winter school break presents me with a rare opportunity&amp;ndash;the chance to schedule certification tests during the work week without having to worry about who will take care of the baby.</description>
+    </item>
+    
+    <item>
+      <title>Site</title>
+      <link>http://frenata.me/site/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://frenata.me/site/</guid>
+      <description>The site is built with Hugo—a static site generator made with Go. It uses the vec theme. The posts are written in Markdown.</description>
     </item>
     
   </channel>

@@ -6,10 +6,20 @@
     <description>Recent content in Blog on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 26 Sep 2017 05:02:06 -0400</lastBuildDate>
+    <lastBuildDate>Tue, 03 Oct 2017 11:24:00 -0400</lastBuildDate>
     
 	<atom:link href="http://frenata.me/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How I learned to stop worrying and love the fuzz</title>
+      <link>http://frenata.me/blog/love-the-fuzz/</link>
+      <pubDate>Tue, 03 Oct 2017 11:24:00 -0400</pubDate>
+      
+      <guid>http://frenata.me/blog/love-the-fuzz/</guid>
+      <description>The Mystery Fuzzing has always been shrouded in mystery to me. Throwing random data at your program and seeing how it reacts felt like something for better programmers or more industrial applications, not the relatively small things I find myself more likely to write.
+This week I dipped my toes into the mysterious waters of fuzzing, stopped worrying, and learned to love what fuzzing can do: reveal bugs in even small applications.</description>
+    </item>
     
     <item>
       <title>RC 0: All Talk</title>

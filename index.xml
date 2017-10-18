@@ -6,10 +6,20 @@
     <description>Recent content on Kata Frenata</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 03 Oct 2017 11:24:00 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 18 Oct 2017 13:21:08 -0400</lastBuildDate>
     
 	<atom:link href="http://frenata.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Implementing a Hash Table in Haskell</title>
+      <link>http://frenata.me/blog/haskell-hashtable-1/</link>
+      <pubDate>Wed, 18 Oct 2017 13:21:08 -0400</pubDate>
+      
+      <guid>http://frenata.me/blog/haskell-hashtable-1/</guid>
+      <description>&amp;ldquo;Let&amp;rsquo;s do it Haskell!&amp;rdquo;, a friend said to me as we discussed the various choices surrounding implementing hash tables. Ultimately we opted for a quick python implementation, but the idea stuck: later I did exactly that.
+Definitions Haskell is a highly abstract programming language that leans heavily on mathematical concepts. By organizing around (mathematical!) functions rather than objects, it helps the programmer avoid a common boogeyman: shared mutable state. Since I&amp;rsquo;ve always loved mathematics and had already been refreshing my knowledge before I got to RC, it seemed a natural language to study.</description>
+    </item>
     
     <item>
       <title>How I learned to stop worrying and love the fuzz</title>

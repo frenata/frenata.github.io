@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title> Implementing a Hash Table in Haskell &middot; Kata Frenata </title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="generator" content="Hugo 0.30-DEV" />
+
+
+<link rel="stylesheet" href="http://frenata.me/css/vec.css">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+<link rel="shortcut icon" href="/favicon.ico">
+
+
+<link href="" rel="alternate" type="application/rss+xml" title="Kata Frenata" />
+
+</head>
+
+<body>
+  <header>
+  <nav>
+    <ul>
+      
+      
+      <li class="pull-left ">
+        <a href="http://frenata.me">/home/frenata</a>
+      </li>
+      
+      
+      <li class="pull-left current">
+        <a href="/blog">~/blog</a>
+      </li>
+      
+      
+      <li class="pull-left ">
+        <a href="/site">~/site</a>
+      </li>
+      
+  
+      <li class="pull-right"><a href=""><i class="fa fa-rss"></i></a></li>
+    </ul>
+  </nav>
+</header>
+
+  <div class="content">
+    
+    
+    <section class="post">
+      <h1 class="post-title"><a href="http://frenata.me/blog/haskell-hashtable-1/">Implementing a Hash Table in Haskell</a></h1>
+      <span class="post-date">Oct 18, 2017 </span>
+      <div class="post-content">
+        
+
+<p>&ldquo;Let&rsquo;s do it Haskell!&rdquo;, a friend said to me as we discussed the various choices surrounding implementing hash tables. Ultimately we opted for a quick python implementation, but the idea stuck: later I did exactly that.</p>
+
+<h4 id="definitions">Definitions</h4>
+
+<p><a href="https://www.haskell.org/">Haskell</a> is a highly abstract programming language that leans heavily on mathematical concepts. By organizing around (mathematical!) <strong>functions</strong> rather than <strong>objects</strong>, it helps the programmer avoid a common boogeyman: <a href="https://www.sep.com/sep-blog/2017/05/16/code-analysis-shared-mutable-state/">shared mutable state</a>. Since I&rsquo;ve always loved mathematics and had already been refreshing my knowledge before I got to <a href="https://www.recurse.com/">RC</a>, it seemed a natural language to study.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Hash_table">Hash tables</a> are a common computing data structured used for fast storage/lookup of data. The basic concept of a hash table involves &ldquo;hashing&rdquo; a part of the data into a value that is  <strong>indistinguishable from random</strong>, and storing the data in a position derived from this hash value. Beyond that minimal definition, there are a variety of techniques that can be used to build hash tables.</p>
+
+<h4 id="questions">Questions&hellip;</h4>
+
+<p>Starting out with a blank source file, I had some important questions on my mind before I could even deal with &ldquo;how&rdquo; to implement the hash table.</p>
+
+<ol>
+<li><p>Haskell values are all &ldquo;immutable&rdquo;, so how can I create a &ldquo;mutable&rdquo; data structure?</p>
+
+<ul>
+<li>Write insert/delete functions in such a way that they return new/rebuilt versions of the data structure! My insert function declaration ended up looking like this:
+<code>insert :: (k, v) -&gt; HashTable k v -&gt; HashTable k v</code></li>
+<li>The above can be read as: given a key/value pair and a HashTable, return a HashTable with that pair inserted.</li>
+</ul></li>
+
+<li><p>How can I have constant time (aka <code>O(1)</code>) access to my hash table, if the main Haskell data structure I&rsquo;ve seen so far is a linked list?</p>
+
+<ul>
+<li>Lean on existing libraries that provide random access rather than sequential access!</li>
+<li>Haskell does have an <a href="https://www.haskell.org/tutorial/arrays.html">Array</a> type, although the version I used isn&rsquo;t perfectly ideal.</li>
+</ul></li>
+
+<li><p>I can have polymorphism?</p>
+
+<ul>
+<li>Yes! Haskell makes polymorphism (handling any type of data) easy but still safe. So far I&rsquo;ve only needed a few constraints on the data to be stored: keys must be <code>Hashable</code> and <code>Eq</code>ual, and values must be <code>Eq</code>ual.</li>
+<li>The key constrains fall pretty naturally from how hash tables are intended to work; the constraint on data is unfortunately driven by an implementation detail and is something I&rsquo;d like to remove eventually.</li>
+</ul></li>
+</ol>
+
+<p>This is what I wrote to search for a key value in the table and return the data assocatiated with that key if it exists.</p>
+
+<pre><code>search :: (Hashable k, Eq k) =&gt; k -&gt; HashTable k v -&gt; Maybe (k, v)
+search key (HashTable array) =
+  List.find (\(k,v) -&gt; k == key) bucket
+  where
+    position = mHash (List.length array) key
+    bucket = array ! position
+</code></pre>
+
+<h4 id="collisions-in-space-and-time">Collisions in space and time</h4>
+
+<p>Something discussed exhaustively in a recent conversation was what kind of strategy to use for hash collisions. The <a href="https://betterexplained.com/articles/understanding-the-birthday-paradox/">Birthday Paradox</a> means that any hash table implementation <strong>must</strong> deal with collisions. In other words, what happens if the keys &ldquo;Alice&rdquo; and &ldquo;Bob&rdquo; happen to hash (modulo the size of the table) down to the same value?</p>
+
+<p>There are two basic approaches: chaining and probing.</p>
+
+<p>Chaining creates a &ldquo;bucket&rdquo; at each position of the table. Rather than storing key/value pairs in the table directly, there is another data structure (commonly a linked list) in each bucket that handles all the data hashed to that bucket.</p>
+
+<p>Probing continues to store key/value pairs directly in the table, but collisions mean the table keeps checking the &ldquo;next&rdquo; slot, until an empty slot is available. To better spread the data and avoid too many future collisions, this is typically not done in a straight line.</p>
+
+<p>For the sake of simplicity I chose the chaining strategy. The implications of this choice are fascinating and deserve a separate discussion.</p>
+
+<h4 id="problems">Problems!</h4>
+
+<p>After getting a minimally correct implementation working, I started digging into the time complexity of what I&rsquo;d done. Unfortunately since the <code>Data.Array</code> incremental update operator <code>(//)</code> must build a new copy of the underlying array, my <code>insert</code> and <code>delete</code> operations also operate in linear <code>O(n)</code> time.</p>
+
+<p>This is very bad! It breaks the expected performance of hash tables, where all three basic operations should complete in constant time.</p>
+
+<p>To fix this, I&rsquo;ll need to replace the underlying <code>Data.Array</code> with something like <a href="https://hackage.haskell.org/package/array-0.5.2.0/docs/Data-Array-MArray.html">Data.Array.MArray</a>. And at least figure out how to work with monads, if not <a href="https://byorgey.wordpress.com/2009/01/12/abstraction-intuition-and-the-monad-tutorial-fallacy/">&ldquo;what they are&rdquo;</a> quite yet.</p>
+
+<h4 id="future-proofing">Future Proofing</h4>
+
+<p>Just the process of writing this simple/naive library has proven highly educational, driving me to learn some of the details of the <code>stack</code> tool, how modules are organized, and &ldquo;smart&rdquo; constructors</p>
+
+<pre><code>mkHashTable :: Eq a =&gt; Int -&gt; HashTable a b
+mkHashTable n =
+  HashTable (array(0,n-1) [(i,[]) | i &lt;- [0..n-1]])
+</code></pre>
+
+<p>that simplify the process of actually creating a HashTable to <code>mkHashTable 10</code>, where you want 10 buckets to begin with. My goal was to abstract away the details of array creation for the user.</p>
+
+<p>While I&rsquo;d also like to dig into something more exciting, I&rsquo;m hoping to continue expanding this little library as I learn more about Haskell:</p>
+
+<ul>
+<li>change underlying immutable <code>Array</code> to a mutable <code>MArray</code>
+
+<ul>
+<li>&hellip;but ideally still provide a mechanism for safe concurrent access</li>
+</ul></li>
+<li>dynamic resizing when the HashTable is overloaded</li>
+<li>replace chaining with quadratic probing
+
+<ul>
+<li>trying out several different options for &ldquo;tombstones&rdquo;</li>
+</ul></li>
+<li>implement sensible typeclasses: <code>Functor</code> and <code>Foldable</code> at least, so that a client can transform or collapse all the data in the table</li>
+<li>QuickCheck to implement property testing/fuzzing</li>
+<li>investigate Google style <a href="https://smerity.com/articles/2015/google_sparsehash.html">&ldquo;sparsehash&rdquo;</a></li>
+</ul>
+
+      </div>
+    </section>
+    
+    <section class="pagination clearfix">
+      
+      <a class="btn previous " href="http://frenata.me/blog/love-the-fuzz/"> How I learned to stop worrying and love the fuzz </a> 
+       
+      
+    </section>
+    
+    
+  </div>
+  
+  <footer>
+  <div class="footer-info">
+    <p>
+      <a href="mailto:andrew@frenata.net?subject="><i class="fa fa-envelope-o"></i> andrew@frenata.net </a>
+      {
+        <a href="https://gohugo.io/" title="Hugo :: A fast and modern static website engine">Hugo 0.30-DEV</a>,
+        <a href="https://github.com/IvanChou/yii.im" title="vec">Vec</a> 
+      }
+      {<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" title="CC BY-NC-ND 3.0">CC BY-NC-ND 3.0</a>}
+    </p>
+  </div>
+</footer>
+  
+  <script src="http://frenata.me/js/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  
+
+</body>
+
+</html>

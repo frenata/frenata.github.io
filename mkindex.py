@@ -2,7 +2,6 @@ import os
 import datetime
 
 files = os.listdir("src/posts")
-print(files)
 
 posts = []
 for file in files:
@@ -14,11 +13,10 @@ for file in files:
         posts.append((file[:-3], title, date.date()))
 
 links = sorted(posts, key=lambda x: x[2], reverse=True)
-print(links)
 
 index = f"""% Tidbits
 %
-%
+% {datetime.date.today().strftime("%d %B %Y")}
 
 """
 

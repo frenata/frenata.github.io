@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="" />
+  <meta name="dcterms.date" content="2017-04-20" />
+  <title>Android Architecture, Part 3</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Android Architecture, Part 3</h1>
+<p class="author"></p>
+<p class="date">20 April 2017</p>
+</header>
+<h3 id="previously">Previously</h3>
+<p>After implementing a <a href="android1.html">class hierarchy</a> and a unified point of database access via a <a href="android2.html">Content Provider</a> the core mechanisms of my app were in place: the ability to do basic CRUD (Create, Retrieve, Update, Delete) actions on the various types in my database. It was time to put the finishing touches, not all of which were trivial.</p>
+<h3 id="time-keeps-ticking">Time Keeps Ticking…</h3>
+<p>The first major task was to enable the user to create notifications for the various data types, most of which had date fields attached. However, in order to get the database functionality working, I had skipped any attempt at verifying user entered dates, which were stored in the SQLite database as plain strings. While a well intentioned user would no doubt enter real dates instead of <code>"next week"</code>, it didn’t seem right to cause notifications to fail for incorrectly written dates, either silently or explicitly.</p>
+<p>Related was the question of the order of items on the lists of terms/courses/assessments. Keeping with “getting it done” I had sorted them simply by the name of the entry, knowing I would eventually want to “do it right”. That <em>time</em> was of course now.</p>
+<p>First I enforced that user entered dates be in a specific format, <code>23 April 2017</code>. But while simple to enter by text and obvious to read, this type of data is not easily sortable. I needed to translate dates into something more like a timestamp for storage in the SQLite database. Thus was a class born <code>DateFormatter</code>, which contained several static helper methods to translate dates from my chosen human readable format, to a timestamp, and back again. I would also add methods to translate dates into Unix epoch timestamps, since this is how I would schedule notifications.</p>
+<h3 id="notify-me">Notify Me</h3>
+<p>Actually getting notifications working wasn’t entirely trivial either, but not from a coding standpoint. This was the first time I ran into the stumbling block of the Internet: host to information about many different ways of working with Android apps, all from different APIs and few marked clearly.</p>
+<p>I pressed on, found a strategy that worked and implemented it. Testing it consisted of forcing the menu items to schedule notifications not on the date specified, but some fixed amount of time, say 5 seconds, after <code>SystemClock.elapsedRealtime()</code>.</p>
+<h3 id="worth-a-thousand-sloc">Worth a Thousand SLOC</h3>
+<p>Next up was attaching camera photos to notes. I had kept putting this off because it felt like it would be complicated, but truly Android makes the simple things complicated and the complicated things simple. The actual code to call out to the camera to take a picture?</p>
+<pre><code>public void takePicture(View view) {
+    Intent takePictureIntent = 
+        new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    if (takePictureIntent.resolveActivity(
+                getPackageManager()) != null) {
+        startActivityForResult(
+                takePictureIntent, 
+                REQUEST_IMAGE_CAPTURE);
+    }
+}</code></pre>
+<p>Taking the image and forcing it into and out of the database was somewhat more involved, but not very. SQL has a datatype <code>blob</code> for a reason. (Though <em>better</em> practice would probably have been to save a URI for the photo)</p>
+<p>SMS was scarely more complicated:</p>
+<pre><code>private void sendSMS() {
+    Uri uri = Uri.parse(&quot;content://contacts&quot;);
+    Intent intent = new Intent(Intent.ACTION_PICK, uri);
+    intent.setType(
+            ContactsContract.
+            CommonDataKinds.
+            Phone.CONTENT_TYPE);
+    startActivityForResult(intent, 1);
+}</code></pre>
+<h3 id="minor-minor-minor">Minor Minor Minor</h3>
+<p>There were a few other minor details to fulfill various requirements or my own sense of pride:</p>
+<ul>
+<li>finding something semi-reasonable to store not in the SQLite database, but with SharedPrefs</li>
+<li>making sure that somewhere I was using an <code>ArrayList</code></li>
+<li>fixing a nagging <code>InternalException</code> that had not disrupted anything but been hitting the logs since the beginning of the project</li>
+<li>validating deletion of database items to prevent orphaned data</li>
+<li>adding a wider selection of sample data</li>
+<li>icons</li>
+<li>reducing some layout duplication</li>
+<li>refactoring the massive amount of duplicated code in the <code>ContentProvider</code></li>
+</ul>
+<h3 id="wrapping-it-up-in-an-apk">Wrapping it up in an APK</h3>
+<p>Ultimately I learned a lot, including that working with XML is not my idea of fun and that mobile app development might not be either. You can certainly develop something rapidly if you know what you’re doing, but boilerplate is everywhere. Android Studio seems almost a necessity, just to keep track of the massive Android library. Discerning which information is from too far in the past to be of use, which information is for an API too far in the future to be of use, and which information is just right is a massive pain.</p>
+<p>Making it all look good is certainly not as easy as it looks. It may be some time before I revisit Android development, but I’m glad I was pushed to do it.</p>
+</body>
+</html>

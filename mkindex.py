@@ -23,7 +23,7 @@ index = f"""% Tidbits
 """
 
 for link in links:
-    index += f" * [{link[1][2:].strip()}](posts/{link[0]}.html)\n"
+    index += f" * [{link[1][2:].strip()}](posts/{link[0]}.html) - {link[2]}\n"
 
 with open("index.md", "w") as f:
     f.write(index)

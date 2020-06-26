@@ -18,4 +18,4 @@ index:
 	rm index.md
 
 $(POST)/%.html: $(SRC)/%.md | $(POST)
-	pandoc -s -f markdown -t html -o $@ $< -c ../css/style.css
+	pandoc -s -f markdown -t html -o $@ $< -c ../css/style.css -A src/footer.html

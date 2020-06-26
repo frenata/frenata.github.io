@@ -1,5 +1,5 @@
 % Android Architecture, Part 3
-%
+% Andrew Nichols
 % 20 April 2017
 
 ### Previously

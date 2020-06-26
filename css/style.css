@@ -72,7 +72,7 @@ img {
 h1, h2, h3, h4, h5, h6 {
   color: #111;
   line-height: 125%;
-  margin-top: 2em;
+  margin-top: 1em;
   font-weight: normal;
 }
 
@@ -245,10 +245,45 @@ table td {
   vertical-align: top;
 }
 
-.author {
-  font-size: 1.2em;
-  text-align: center;
+
+header {
+    display: grid;
+    margin-bottom: 30px;
 }
+
+header .title {
+    grid-column: 1 / 2;
+    grid-row: 1;
+    margin-bottom: 10px;
+}
+
+header .author {
+  grid-column: 1;
+  grid-row: 2;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 1.2em;
+}
+
+header .date {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.2em;
+    text-align: right;
+}
+
+footer {
+    margin-top: 30px;
+}
+
+footer ul {
+    list-style: none;
+    display: grid;
+    grid-auto-flow: column;
+}
+
 
 @media only screen and (min-width: 480px) {
   body {
@@ -326,4 +361,3 @@ table td {
     page-break-after: avoid;
   }
 }
-

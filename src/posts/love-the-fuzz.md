@@ -1,5 +1,5 @@
 % How I learned to stop worrying and love the fuzz
-%
+% Andrew Nichols
 % 3 October 2017
 
 #### The Mystery

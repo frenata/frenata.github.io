@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="" />
+  <meta name="author" content="Andrew Nichols" />
   <meta name="dcterms.date" content="2017-09-09" />
   <title>Saving a partial Elm Model to LocalStorage</title>
   <style type="text/css">
@@ -18,7 +18,7 @@
 <body>
 <header id="title-block-header">
 <h1 class="title">Saving a partial Elm Model to LocalStorage</h1>
-<p class="author"></p>
+<p class="author">Andrew Nichols</p>
 <p class="date">9 September 2017</p>
 </header>
 <h3 id="pollution">Pollution</h3>
@@ -68,5 +68,21 @@ The types of values that can flow through in and out of Elm include:
 <p>I also updated the JS to provide a better key name to the saved data: “portfolio” rather than “model”. That led me on a crazy bughunt that only ended when I realized I had changed the key value only in the function calls to save and remove… but not to initialize the Elm app. Put that in the “literals should be defined as constants” file.</p>
 <p>The actual code for stock trading is not very interesting, but delving into using localStorage and ports ended up forcing me to learn a bunch. I consider myself fortunate that my use case was <em>just</em> different enough from the tutorial code as to not work at all. If my model had been “sendable” in the first place, the code would have worked, I would have been satisfied, but I would have walked away without much actual knowledge of <em>how</em> it worked.</p>
 <p>tl;dr: Failing is learning.</p>
+<footer>
+    <ul>
+        <li>
+            <a href="../index.html">Home</a>
+        </li>
+        <li>
+            <a href="https://github.com/frenata">GitHub</a>
+        </li>
+        <li>
+            <a href="https://exercism.io/profiles/frenata">Exercism</a>
+        </li>
+        <li>
+            <a href="https://www.hackthebox.eu/home/users/profile/311428">HackTheBox</a>
+        </li>
+    </ul>
+</footer>
 </body>
 </html>

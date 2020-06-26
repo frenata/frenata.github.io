@@ -1,5 +1,5 @@
 % Android Architecture, Part 1
-% 
+% Andrew Nichols
 % 15 April 2017
 
 Frustrated by communication issues while working on my WGU capstone/thesis, I recently turned to the only other class I have left: Mobile Application Development. I was fairly excited by this (I get to build Android apps!), but the reality of the class was somewhat intimidating. There is no objective assessment, only a performance assessment that involves building an actual app. Fine. But provided materials are...minimal. No problem, I thought, since android development is so popular there should be plenty of information freely available on the web!

@@ -1,5 +1,5 @@
 % Android Architecture, Part 2
-%
+% Andrew Nichols
 % 17 April 2017
 
 After bulding the basics of my [android app](android1.html), I had a simple app that could display/edit lists of school terms. The problem? The requirements specified that the app have terms, courses associated with each term, assessments associated with each course, and notes associated with each course *or* assessment.

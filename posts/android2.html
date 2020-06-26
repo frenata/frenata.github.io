@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="" />
+  <meta name="author" content="Andrew Nichols" />
   <meta name="dcterms.date" content="2017-04-17" />
   <title>Android Architecture, Part 2</title>
   <style type="text/css">
@@ -18,7 +18,7 @@
 <body>
 <header id="title-block-header">
 <h1 class="title">Android Architecture, Part 2</h1>
-<p class="author"></p>
+<p class="author">Andrew Nichols</p>
 <p class="date">17 April 2017</p>
 </header>
 <p>After bulding the basics of my <a href="android1.html">android app</a>, I had a simple app that could display/edit lists of school terms. The problem? The requirements specified that the app have terms, courses associated with each term, assessments associated with each course, and notes associated with each course <em>or</em> assessment.</p>
@@ -57,5 +57,21 @@ public int update(
 }</code></pre>
 <p>This general pattern proved hugely useful, so that the <code>ContentProvider</code> handled most aspects of interacting with the database correctly, so long as it was given the proper URI, which are defined as public constants in the <code>ContentProvider</code> itself. Because it was also necessary for courses to understand what term they were in and build the appropriate WHERE clause, the classes are sadly fairly coupled together, but having the <code>ContentProvider</code> handle most aspects of DB interaction is a step in the right direction. Further refactoring could likely reduce coupling throughout the codebase.</p>
 <p>From this point on, I implemented the entire database structure as specified by the requirements, absent pictures in notes, which I decided to save for another day.</p>
+<footer>
+    <ul>
+        <li>
+            <a href="../index.html">Home</a>
+        </li>
+        <li>
+            <a href="https://github.com/frenata">GitHub</a>
+        </li>
+        <li>
+            <a href="https://exercism.io/profiles/frenata">Exercism</a>
+        </li>
+        <li>
+            <a href="https://www.hackthebox.eu/home/users/profile/311428">HackTheBox</a>
+        </li>
+    </ul>
+</footer>
 </body>
 </html>

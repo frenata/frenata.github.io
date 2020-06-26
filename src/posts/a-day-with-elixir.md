@@ -1,5 +1,5 @@
 % A Day With Elixir
-% 
+% Andrew Nichols
 % 18 December 2016
 
 I've pushed hard at schoolwork for the past two weeks, and a day of Rest presented itself. No new studies, no reviews, no school.

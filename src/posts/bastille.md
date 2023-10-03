@@ -1,4 +1,4 @@
-% Dr. Fan (or: How I learned to stop worrying and put everything into a jail)
+% Fans and Jails
 % Andrew Nichols
 % 3 October 2023
 

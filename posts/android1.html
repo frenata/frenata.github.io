@@ -7,13 +7,27 @@
   <meta name="author" content="Andrew Nichols" />
   <meta name="dcterms.date" content="2017-04-15" />
   <title>Android Architecture, Part 1</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="../css/style.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
@@ -21,15 +35,58 @@
 <p class="author">Andrew Nichols</p>
 <p class="date">15 April 2017</p>
 </header>
-<p>Frustrated by communication issues while working on my WGU capstone/thesis, I recently turned to the only other class I have left: Mobile Application Development. I was fairly excited by this (I get to build Android apps!), but the reality of the class was somewhat intimidating. There is no objective assessment, only a performance assessment that involves building an actual app. Fine. But provided materials are…minimal. No problem, I thought, since android development is so popular there should be plenty of information freely available on the web!</p>
-<p>While my original plan was to work through some of Udacity’s free material on Android, then to launch into the class project, I realized that the time left in my term was quickly running out. Not having time to learn it “the right way”, I resolved to “fake it until I made it,” passing the class, and revisiting android development proper when my time permits. My first step was to follow a tutorial to build a working app along similar lines to what I needed to eventually build. I pulled from two tutorials to get the basics rolling:</p>
+<p>Frustrated by communication issues while working on my WGU
+capstone/thesis, I recently turned to the only other class I have left:
+Mobile Application Development. I was fairly excited by this (I get to
+build Android apps!), but the reality of the class was somewhat
+intimidating. There is no objective assessment, only a performance
+assessment that involves building an actual app. Fine. But provided
+materials are…minimal. No problem, I thought, since android development
+is so popular there should be plenty of information freely available on
+the web!</p>
+<p>While my original plan was to work through some of Udacity’s free
+material on Android, then to launch into the class project, I realized
+that the time left in my term was quickly running out. Not having time
+to learn it “the right way”, I resolved to “fake it until I made it,”
+passing the class, and revisiting android development proper when my
+time permits. My first step was to follow a tutorial to build a working
+app along similar lines to what I needed to eventually build. I pulled
+from two tutorials to get the basics rolling:</p>
 <ul>
-<li>Lynda’s <a href="https://www.lynda.com/Android-tutorials/Building-Note-Taking-App-Android/377485-2.html">Note-Taking App</a> video tutorial, which was specifically linked on the WGU course page</li>
-<li>Vogella’s <a href="http://www.vogella.com/tutorials/AndroidSQLite/article.html">Android SQLite database tutorial</a>, which is just text and lots of code samples, covering a variety of ways to interact with a SQLite database in Android</li>
+<li>Lynda’s <a
+href="https://www.lynda.com/Android-tutorials/Building-Note-Taking-App-Android/377485-2.html">Note-Taking
+App</a> video tutorial, which was specifically linked on the WGU course
+page</li>
+<li>Vogella’s <a
+href="http://www.vogella.com/tutorials/AndroidSQLite/article.html">Android
+SQLite database tutorial</a>, which is just text and lots of code
+samples, covering a variety of ways to interact with a SQLite database
+in Android</li>
 </ul>
-<p>I primarily followed the Lynda tutorials, adjusting and learning as I went. For instance, that tutorial uses a very simple DB table with just two columns: the text of the note and the id (primary key) of the note. For even the simplest of my tables I needed to store at least 4 pieces of information: a term title, start and end dates, and the id. Thus my app quickly diverged from the tutorial, with multiple relevant fields complicating the layout files. To list data, android provides some basic list layouts, but they hold only up to two pieces of info. Since I wanted to dispaly three pieces of information, I had to build my own custom list layout.</p>
-<p>I kept the basic class structure the same, although looking forward somewhat I seperated my <code>TermTable</code>, representing a single SQL table, from my <code>SchedulerDBHelper</code>, which opens/creates/upgrades the database itself, and my <code>SchedulerProvider</code>, which is a ContentProvider to allow “easy” access to the database. Early on, I also implemented a separate <code>Term</code> class to handle bundling of the values from the <code>TermTable</code> table, but I later merged these together into a single class called <code>Term</code>, to handle all things related to a “term”.</p>
-<p>From that point on, working through the rest of the tutorials was relatively straightforward, until I had a working app that let me display lists of terms and edit them, all backed by a SQLite database. But of course, this was only the beginning.</p>
+<p>I primarily followed the Lynda tutorials, adjusting and learning as I
+went. For instance, that tutorial uses a very simple DB table with just
+two columns: the text of the note and the id (primary key) of the note.
+For even the simplest of my tables I needed to store at least 4 pieces
+of information: a term title, start and end dates, and the id. Thus my
+app quickly diverged from the tutorial, with multiple relevant fields
+complicating the layout files. To list data, android provides some basic
+list layouts, but they hold only up to two pieces of info. Since I
+wanted to dispaly three pieces of information, I had to build my own
+custom list layout.</p>
+<p>I kept the basic class structure the same, although looking forward
+somewhat I seperated my <code>TermTable</code>, representing a single
+SQL table, from my <code>SchedulerDBHelper</code>, which
+opens/creates/upgrades the database itself, and my
+<code>SchedulerProvider</code>, which is a ContentProvider to allow
+“easy” access to the database. Early on, I also implemented a separate
+<code>Term</code> class to handle bundling of the values from the
+<code>TermTable</code> table, but I later merged these together into a
+single class called <code>Term</code>, to handle all things related to a
+“term”.</p>
+<p>From that point on, working through the rest of the tutorials was
+relatively straightforward, until I had a working app that let me
+display lists of terms and edit them, all backed by a SQLite database.
+But of course, this was only the beginning.</p>
 <footer>
     <ul>
         <li>

@@ -7,13 +7,27 @@
   <meta name="author" content="Andrew Nichols" />
   <meta name="dcterms.date" content="2017-09-09" />
   <title>Saving a partial Elm Model to LocalStorage</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="../css/style.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
@@ -22,11 +36,23 @@
 <p class="date">9 September 2017</p>
 </header>
 <h3 id="pollution">Pollution</h3>
-<p>I was nearly finished building a relatively simple webapp to <a href="https://github.com/frenata/stocksim">simulate stock trading</a>, when a problem I had set aside from the beginning of the work came looming back: storing the data.</p>
-<p>The app gives you some money to play with and allows you to buy and sell stocks, but the portfolio data was purely ephemeral, vanishing with a refreshed page. That doesn’t make much sense for a simulation that would most likely be used over a number of days.</p>
-<p>But I had set the issue aside in favor of building out the actual features, knowing that eventually I would have to get my hands dirty in the world of Elm “ports”, a feature that allows non-functional JS code to interop with the clean and pure Elm code.</p>
+<p>I was nearly finished building a relatively simple webapp to <a
+href="https://github.com/frenata/stocksim">simulate stock trading</a>,
+when a problem I had set aside from the beginning of the work came
+looming back: storing the data.</p>
+<p>The app gives you some money to play with and allows you to buy and
+sell stocks, but the portfolio data was purely ephemeral, vanishing with
+a refreshed page. That doesn’t make much sense for a simulation that
+would most likely be used over a number of days.</p>
+<p>But I had set the issue aside in favor of building out the actual
+features, knowing that eventually I would have to get my hands dirty in
+the world of Elm “ports”, a feature that allows non-functional JS code
+to interop with the clean and pure Elm code.</p>
 <h3 id="copypasta">Copypasta</h3>
-<p>A little <a href="http://lmgtfy.com/?q=elm+localstorage">research</a> turned up some useful information, including a lovely tutorial on building Elm apps that included detailed instructions on how to setup ports for localStorage.</p>
+<p>A little <a href="http://lmgtfy.com/?q=elm+localstorage">research</a>
+turned up some useful information, including a lovely tutorial on
+building Elm apps that included detailed instructions on how to setup
+ports for localStorage.</p>
 <p>Hurrah!</p>
 <p>There wasn’t much to implement, and it mostly made sense.</p>
 <ul>
@@ -37,11 +63,16 @@
 <li>remove the model from storage</li>
 </ul></li>
 <li>some <code>port</code> declarations in Elm</li>
-<li>a helper function with this type: <code>Model -&gt; ( Model, Cmd Msg )</code> that needed to be inserted into the <code>update</code> function, capturing certain model updates to create the side effect of the JS interop</li>
+<li>a helper function with this type:
+<code>Model -&gt; ( Model, Cmd Msg )</code> that needed to be inserted
+into the <code>update</code> function, capturing certain model updates
+to create the side effect of the JS interop</li>
 </ul>
-<p>The last one was the weirdest to wrap my head around, but the entire effort was promisingly easy.</p>
+<p>The last one was the weirdest to wrap my head around, but the entire
+effort was promisingly easy.</p>
 <h3 id="friendship-is-magic">Friendship is Magic</h3>
-<p>As is typical of making changes to an Elm program, compiling resulted in a friendly error message.</p>
+<p>As is typical of making changes to an Elm program, compiling resulted
+in a friendly error message.</p>
 <pre><code>Port `setStorage` is trying to communicate an unsupported type.
 
 352| port setStorage : Model -&gt; Cmd msg
@@ -54,19 +85,46 @@ The types of values that can flow through in and out of Elm include:
 
     Ints, Floats, Bools, Strings, Maybes, Lists, Arrays, Tuples, Json.Values,
     and concrete records.</code></pre>
-<p>This was a problem. My data model did use a <code>Dict</code> to store stock positions in a user’s portfolio, but apparently Elm wasn’t having that.</p>
-<p>I poked around to see if I could modify the code I’d only half-understood to send/recieve something other than the whole model. The good news: yes. The bad news: the data I actually cared about storing was that <code>Dict</code>.</p>
+<p>This was a problem. My data model did use a <code>Dict</code> to
+store stock positions in a user’s portfolio, but apparently Elm wasn’t
+having that.</p>
+<p>I poked around to see if I could modify the code I’d only
+half-understood to send/recieve something other than the whole model.
+The good news: yes. The bad news: the data I actually cared about
+storing was that <code>Dict</code>.</p>
 <h3 id="life-finds-a-way">Life Finds a Way</h3>
-<p>After a few half starts and many more friendly error messages, I started to put together a solution. The <code>Dict</code> library helpfully included the pair of functions <code>toList</code> and <code>fromList</code>, which according to the compiler <em>were</em> eligible for sending via ports.</p>
-<p>On examination, the only data that needed to be kept was the cash balance and the list of positions, so the concrete data type that ended up being sent/recieved was:</p>
+<p>After a few half starts and many more friendly error messages, I
+started to put together a solution. The <code>Dict</code> library
+helpfully included the pair of functions <code>toList</code> and
+<code>fromList</code>, which according to the compiler <em>were</em>
+eligible for sending via ports.</p>
+<p>On examination, the only data that needed to be kept was the cash
+balance and the list of positions, so the concrete data type that ended
+up being sent/recieved was:</p>
 <p><code>(Float, List (String, Position))</code></p>
-<p>Position is a concrete record type with a couple of pieces of relevant data. Probably there’s still some useful refactoring to be done here by aliasing the above tuple to a named type, since it shows up in several places.</p>
+<p>Position is a concrete record type with a couple of pieces of
+relevant data. Probably there’s still some useful refactoring to be done
+here by aliasing the above tuple to a named type, since it shows up in
+several places.</p>
 <h3 id="failure-is-victory">Failure is Victory</h3>
-<p>Only a smattering more work remained after this insight. My <code>init</code> function needed to rebuild the floating balance and the dictionary, leaving it with this ugly type signature:</p>
+<p>Only a smattering more work remained after this insight. My
+<code>init</code> function needed to rebuild the floating balance and
+the dictionary, leaving it with this ugly type signature:</p>
 <p><code>init : Maybe ( Float, List ( String, Position ) ) -&gt; ( Model, Cmd Msg )</code></p>
-<p>It’s all I can do to <em>not</em> go create a SavedPortfolio type alias right now.</p>
-<p>I also updated the JS to provide a better key name to the saved data: “portfolio” rather than “model”. That led me on a crazy bughunt that only ended when I realized I had changed the key value only in the function calls to save and remove… but not to initialize the Elm app. Put that in the “literals should be defined as constants” file.</p>
-<p>The actual code for stock trading is not very interesting, but delving into using localStorage and ports ended up forcing me to learn a bunch. I consider myself fortunate that my use case was <em>just</em> different enough from the tutorial code as to not work at all. If my model had been “sendable” in the first place, the code would have worked, I would have been satisfied, but I would have walked away without much actual knowledge of <em>how</em> it worked.</p>
+<p>It’s all I can do to <em>not</em> go create a SavedPortfolio type
+alias right now.</p>
+<p>I also updated the JS to provide a better key name to the saved data:
+“portfolio” rather than “model”. That led me on a crazy bughunt that
+only ended when I realized I had changed the key value only in the
+function calls to save and remove… but not to initialize the Elm app.
+Put that in the “literals should be defined as constants” file.</p>
+<p>The actual code for stock trading is not very interesting, but
+delving into using localStorage and ports ended up forcing me to learn a
+bunch. I consider myself fortunate that my use case was <em>just</em>
+different enough from the tutorial code as to not work at all. If my
+model had been “sendable” in the first place, the code would have
+worked, I would have been satisfied, but I would have walked away
+without much actual knowledge of <em>how</em> it worked.</p>
 <p>tl;dr: Failing is learning.</p>
 <footer>
     <ul>

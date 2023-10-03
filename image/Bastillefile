@@ -1,0 +1,6 @@
+PKG lang/python3
+PKG textproc/hs-pandoc
+PKG git
+PKG devel/gmake
+
+MOUNT . /src nullfs rw 1 1
